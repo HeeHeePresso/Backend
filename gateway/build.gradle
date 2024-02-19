@@ -37,7 +37,8 @@ dependencies {
 	implementation 'io.github.microutils:kotlin-logging-jvm:2.0.11'
 
 	// cache
-	implementation 'com.github.ben-manes.caffeine:caffeine:2.8.0'
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	implementation 'com.github.ben-manes.caffeine:caffeine'
 
 	// spring cloud
 	implementation 'org.springframework.cloud:spring-cloud-starter-gateway-mvc'
