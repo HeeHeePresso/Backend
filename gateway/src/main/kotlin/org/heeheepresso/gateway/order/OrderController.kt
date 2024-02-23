@@ -26,7 +26,6 @@ class OrderController(
     }
 
     @PatchMapping("/{orderId}")
-    // TODO: authorization for employee
     suspend fun updateOrderState(
             @RequestParam("userId") userId: String,
             @RequestParam("orderState") orderState: String): Mono<Unit> {

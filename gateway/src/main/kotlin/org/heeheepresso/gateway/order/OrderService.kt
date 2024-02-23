@@ -43,6 +43,9 @@ class OrderService(
         }.map {
             try {
                 val state = OrderState.valueOf(orderState)
+                if(!OrderState.isAcceptableOrderStateByRole(it.userRole, state))
+                    throw IllegalArgumentException("Error: Invalid operation request")
+
                 orderApiService.updateOrderState(it, state)
             } catch (e: IllegalArgumentException) {
                 throw IllegalArgumentException("Error: Invalid Order State Value")
