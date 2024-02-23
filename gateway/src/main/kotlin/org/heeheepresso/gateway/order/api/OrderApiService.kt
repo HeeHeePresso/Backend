@@ -1,6 +1,7 @@
 package org.heeheepresso.gateway.order.api
 
 import com.google.common.collect.Lists
+import org.heeheepresso.gateway.order.OrderState
 import org.heeheepresso.gateway.user.UserRole.CUSTOMER
 import org.heeheepresso.gateway.user.UserRole.EMPLOYEE
 
@@ -22,5 +23,9 @@ class OrderApiService {
                 )
             }
         }
+    }
+
+    fun updateOrderState(orderApiRequest: OrderApiRequest, orderState: OrderState){
+        // TODO : implement calling updating order state
     }
 }
