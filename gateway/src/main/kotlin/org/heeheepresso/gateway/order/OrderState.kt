@@ -10,7 +10,7 @@ enum class OrderState {
     CANCELED, // by customer
     REJECTED; // by employee
     companion object{
-        fun isAcceptableOrderStateByRole(userRole: UserRole, orderState: OrderState): Boolean{
+        fun isAbleToChangeByRole(userRole: UserRole, orderState: OrderState): Boolean{
             return when(userRole){
                 UserRole.CUSTOMER -> {
                     when(orderState){
