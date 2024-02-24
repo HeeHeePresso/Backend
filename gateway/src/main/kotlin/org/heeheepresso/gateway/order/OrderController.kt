@@ -4,6 +4,7 @@ import mu.KotlinLogging
 import org.heeheepresso.gateway.order.dto.OrderResponse
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -28,7 +29,7 @@ class OrderController(
     @PatchMapping("/{orderId}")
     suspend fun updateOrderState(
             @RequestParam("userId") userId: String,
-            @RequestParam("orderState") orderState: String): Mono<Unit> {
+            @RequestBody(required = true) orderState: String): Mono<Unit> {
         return orderService.updateOrderState(userId, orderState)
                 .onErrorResume { e ->
                     logger.error("order state updating error: ${e.message}" + e)
