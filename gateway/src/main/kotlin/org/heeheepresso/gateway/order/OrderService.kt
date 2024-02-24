@@ -4,6 +4,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.reactor.mono
 import org.heeheepresso.gateway.order.api.OrderApiRequest
 import org.heeheepresso.gateway.order.api.OrderApiService
+import org.heeheepresso.gateway.order.dto.OrderCommandApiRequest
 import org.heeheepresso.gateway.order.dto.OrderResponse
 import org.heeheepresso.gateway.user.UserService
 import org.springframework.stereotype.Service
@@ -32,21 +33,22 @@ class OrderService(
                 }
     }
 
-    suspend fun updateOrderState(userId: String, orderState: String): Mono<Unit> = coroutineScope {
+    suspend fun updateOrderState(orderId: Long, userId: String, orderState: String): Mono<Unit> = coroutineScope {
         mono {
             userService.getUserRole(userId)
         }.map {
-            OrderApiRequest(
+            OrderCommandApiRequest(
+                    orderId = orderId,
                     userId = userId,
                     userRole = it
             )
         }.map {
             try {
-                val state = OrderState.valueOf(orderState)
-                if(!OrderState.isAcceptableOrderStateByRole(it.userRole, state))
+                val requestState = OrderState.valueOf(orderState)
+                if (!OrderState.isAbleToChangeByRole(it.userRole, requestState))
                     throw IllegalArgumentException("Error: Invalid operation request")
 
-                orderApiService.updateOrderState(it, state)
+                orderApiService.updateOrderState(it, requestState)
             } catch (e: IllegalArgumentException) {
                 throw IllegalArgumentException("Error: Invalid Order State Value")
             }
