@@ -1,6 +1,7 @@
 package org.heeheepresso.orderapi.orderHistory
 
 import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.date.shouldBeAfter
 import io.kotest.matchers.shouldBe
 import org.heeheepresso.orderapi.order.OrderStatus
 import org.heeheepresso.orderapi.orderHistory.dto.request.OrderHistoryCreateRequest
@@ -8,6 +9,7 @@ import org.heeheepresso.orderapi.orderHistory.menu.dto.request.OrderMenuHistoryC
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.math.BigDecimal
+import java.time.LocalDateTime
 
 @SpringBootTest
 class OrderHistoryServiceTest @Autowired constructor(
@@ -28,6 +30,7 @@ class OrderHistoryServiceTest @Autowired constructor(
                     orderMenuHistoryList = emptyList(),
                 )
 
+                val now = LocalDateTime.now()
                 val result = orderHistoryService.createOrderHistory(request)
 
                 Then("저장한 주문 히스토리 그대로를 반환하고 주문 메뉴 리스트는 null 반환 (주문 메뉴는 별도의 서비스에서 처리)") {
@@ -39,7 +42,10 @@ class OrderHistoryServiceTest @Autowired constructor(
                     result.storedId shouldBe request.storedId
                     result.paymentId shouldBe request.paymentId
                     result.orderMenuHistoryList?.size shouldBe 0
-
+                    result.createdBy shouldBe "system"
+                    result.createdDate shouldBeAfter now
+                    result.modifiedBy shouldBe "system"
+                    result.modifiedDate shouldBeAfter now
                 }
             }
 
@@ -60,6 +66,7 @@ class OrderHistoryServiceTest @Autowired constructor(
                     orderMenuHistoryList = orderMenuHistory,
                 )
 
+                val now = LocalDateTime.now()
                 val result = orderHistoryService.createOrderHistory(request)
 
                 Then("저장한 주문 및 주문 메뉴 히스토리 그대로 반환") {
@@ -75,8 +82,11 @@ class OrderHistoryServiceTest @Autowired constructor(
                         orderMenuHistory.menuId shouldBe request.orderMenuHistoryList[index].menuId
                         orderMenuHistory.price shouldBe request.orderMenuHistoryList[index].price
                         orderMenuHistory.quantity shouldBe request.orderMenuHistoryList[index].quantity
-
                     }
+                    result.createdBy shouldBe "system"
+                    result.createdDate shouldBeAfter now
+                    result.modifiedBy shouldBe "system"
+                    result.modifiedDate shouldBeAfter now
                 }
             }
         }

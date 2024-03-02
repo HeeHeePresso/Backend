@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 @EntityListeners(AuditingEntityListener::class)
 abstract class BaseEntity {
 
-    @Column(name = "created_by")
+    @Column(name = "created_by", nullable = false, updatable = false)
     @CreatedBy
     var createdBy: String = "system"
         protected set
@@ -24,7 +24,7 @@ abstract class BaseEntity {
     var createdDate: LocalDateTime = LocalDateTime.MIN
         protected set
 
-    @Column(name = "modified_by")
+    @Column(name = "modified_by", nullable = false)
     @LastModifiedBy
     var modifiedBy: String = "system"
         protected set
@@ -33,5 +33,4 @@ abstract class BaseEntity {
     @Column(name = "modified_date", nullable = false)
     var modifiedDate: LocalDateTime = LocalDateTime.MIN
         protected set
-
 }
