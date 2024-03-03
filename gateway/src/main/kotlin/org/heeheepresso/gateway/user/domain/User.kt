@@ -2,13 +2,14 @@ package org.heeheepresso.gateway.user.domain
 
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.LocalDateTime
 
 @Entity
+@EntityListeners(AuditingEntityListener::class)
 class User(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "USER_ID")
         val id: Long,
         @Column(unique = true, nullable = false)
         val phoneNumber: String,
