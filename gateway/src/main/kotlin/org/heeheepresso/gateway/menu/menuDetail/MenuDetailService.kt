@@ -13,8 +13,8 @@ class MenuDetailService {
         return ImmutableList.of(MenuDetail(
             menuId = 1L,
             imagePath = "/sample.png",
-            nameKr = "신승건",
-            nameEng = "ssg",
+            title = "신승건",
+            subTitle = "ssg",
             price = 1000,
         ))
     }

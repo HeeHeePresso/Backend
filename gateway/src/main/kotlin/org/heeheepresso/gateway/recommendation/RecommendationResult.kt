@@ -12,8 +12,8 @@ data class RecommendationResult(
             .map{ menu -> menuDetails.getOrDefault(menu.menuId, MenuDetail()) }
             .map{ menuDetail -> Menu(
                 imagePath = menuDetail.imagePath,
-                nameKr = menuDetail.nameKr,
-                nameEng = menuDetail.nameEng,
+                title = menuDetail.title,
+                subTitle = menuDetail.subTitle,
                 price = menuDetail.price) }
     }
 }
