@@ -2,7 +2,7 @@ package org.heeheepresso.orderapi.orderHistory
 
 import jakarta.persistence.*
 import org.heeheepresso.orderapi.common.BaseEntity
-import org.heeheepresso.orderapi.order.OrderStatus
+import org.heeheepresso.orderapi.order.domain.model.OrderStatus
 import org.heeheepresso.orderapi.orderHistory.dto.request.OrderHistoryCreateRequest
 import org.heeheepresso.orderapi.orderHistory.menu.OrderMenuHistory
 import org.heeheepresso.orderapi.orderHistory.menu.dto.request.OrderMenuHistoryCreateRequest
