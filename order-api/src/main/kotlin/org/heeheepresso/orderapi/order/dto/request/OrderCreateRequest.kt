@@ -4,7 +4,6 @@ import org.heeheepresso.orderapi.order.domain.model.Order
 import java.math.BigDecimal
 
 data class OrderCreateRequest(
-    val orderId: Long,
     val userId: Long,
     val amount: BigDecimal,
     val packagedYn: Boolean,

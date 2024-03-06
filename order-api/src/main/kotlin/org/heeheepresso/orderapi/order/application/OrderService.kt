@@ -1,5 +1,6 @@
 package org.heeheepresso.orderapi.order.application
 
+import org.heeheepresso.orderapi.order.domain.model.Order
 import org.heeheepresso.orderapi.order.domain.repository.OrderRepository
 import org.heeheepresso.orderapi.order.dto.request.OrderCreateRequest
 import org.springframework.stereotype.Service
@@ -11,8 +12,8 @@ class OrderService(
 ) {
 
     @Transactional
-    fun createOrder(request: OrderCreateRequest) {
-        orderRepository.save(request.toEntity())
+    fun createOrder(request: OrderCreateRequest): Order {
+        return orderRepository.save(request.toEntity())
     }
 
 }
