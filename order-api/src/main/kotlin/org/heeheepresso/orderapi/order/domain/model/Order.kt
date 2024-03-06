@@ -33,9 +33,8 @@ class Order(
 
     var packagedYn = packagedYn
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "order_menu", joinColumns = [JoinColumn(name = "order_id")])
-    @OrderColumn(name = "line_idx")
     val orderMenuList: List<OrderMenu> = orderMenuList
 
 }
