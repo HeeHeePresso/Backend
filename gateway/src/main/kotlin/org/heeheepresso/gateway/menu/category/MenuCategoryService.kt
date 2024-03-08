@@ -17,34 +17,54 @@ import org.springframework.stereotype.Service
 
 @Service
 class MenuCategoryService(
-    private val userService: UserService,
-    private val recommendationService: RecommendationService,
-    private val menuDetailService: MenuDetailService,
+        private val userService: UserService,
+        private val recommendationService: RecommendationService,
+        private val menuDetailService: MenuDetailService,
 ) {
 
     companion object {
         private val RECOMMENDED_PAGE_HANDLERS =
-            ImmutableList.of<RecommendationHandler>(NEWLY_RELEASED, HIGHLY_RECOMMENDED, BREAD)
+                ImmutableList.of<RecommendationHandler>(NEWLY_RELEASED, HIGHLY_RECOMMENDED, BREAD)
     }
 
     suspend fun getRecommendedPage(userId: Long): RecommendedPageResponse {
         return coroutineScope {
             val storeId = async { userService.getStore(userId) }
             val resultSet = recommendationService
-                .getRecommendedMenus(Context(userId = userId, storeId = storeId.await()), RECOMMENDED_PAGE_HANDLERS)
+                    .getRecommendedMenus(Context(userId = userId, storeId = storeId.await()), RECOMMENDED_PAGE_HANDLERS)
 
-            val menuDetailMap = async { menuDetailService
-                    .getMenuDetails(resultSet.getTotalMenuIds()).associateBy { it.menuId } }
+            val menuDetailMap = async {
+                menuDetailService
+                        .getMenuDetails(resultSet.getTotalMenuIds()).associateBy { it.menuId }
+            }
 
             buildRecommendedPageResponse(resultSet, menuDetailMap.await())
         }
     }
 
     private fun buildRecommendedPageResponse(
-        resultSet: RecommendationResultSet, menuDetails: Map<Long, MenuDetail>
+            resultSet: RecommendationResultSet, menuDetails: Map<Long, MenuDetail>
     ): RecommendedPageResponse {
         val recommendedCarousels = resultSet.results
-            .map { RecommendedCarousel(it.handler, it.getMenus(menuDetails)) }
+                .map { RecommendedCarousel(it.handler, it.getMenus(menuDetails)) }
         return RecommendedPageResponse(recommendedCarousels)
+    }
+
+    suspend fun getPageByCategory(userId: Long, category: String): RecommendedCarousel {
+        val menuCategory = MenuCategory.valueOf(category)
+        return coroutineScope {
+            val storeId = async { userService.getStore(userId) } // TODO: redis로부터 매장 정보 가져오기
+            // 추천 서비스로부터 주어진 카테고리에 대한 추천 목록 조회
+            val result = recommendationService
+                    .getRecommendedMenuByCategory(Context(userId, storeId.await()), menuCategory)
+
+            // 상세 메뉴 서비스로부터 고유 메뉴마다의 상세 메뉴 데이터 조회
+            val menuDetailMap = async {
+                menuDetailService
+                        .getMenuDetails(result.recommendedMenus.map { it.menuId }).associateBy { it.menuId }
+            }
+            // 최종 메뉴 목록 생성 및 반환
+            RecommendedCarousel(menuCategory.name, result.getMenus(menuDetailMap.await()))
+        }
     }
 }
