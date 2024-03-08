@@ -5,6 +5,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.glassfish.jersey.internal.guava.Lists
 import org.heeheepresso.gateway.common.Context
+import org.heeheepresso.gateway.menu.category.MenuCategory
 import org.heeheepresso.gateway.menu.domain.Menu
 import org.springframework.stereotype.Service
 
@@ -16,16 +17,17 @@ class RecommendationService {
     }
 
     suspend fun getRecommendedMenus(
-        context: Context, handlers: ImmutableList<RecommendationHandler>): RecommendationResultSet {
+            context: Context, handlers: ImmutableList<RecommendationHandler>): RecommendationResultSet {
         val resultSet: ArrayList<RecommendationResult> = ArrayList()
         coroutineScope {
             handlers.map {
                 val request = RecommendedRequest(
-                    handler = it.name,
-                    userId = context.userId,
-                    storeId = context.storeId,
-                    pageSize = CAROUSEL_PAGE_SIZE,
-                    offset = 0,)
+                        handler = it.name,
+                        userId = context.userId,
+                        storeId = context.storeId,
+                        pageSize = CAROUSEL_PAGE_SIZE,
+                        offset = 0,
+                )
                 async { getRecommendedMenu(request) }
             }.forEach {
                 resultSet.add(it.await())
@@ -36,7 +38,21 @@ class RecommendationService {
 
     private suspend fun getRecommendedMenu(request: RecommendedRequest): RecommendationResult {
         return RecommendationResult(
-            recommendedMenus = ImmutableList.of(RecommendedMenu(1)),
-            handler = request.handler)
+                recommendedMenus = ImmutableList.of(RecommendedMenu(1)),
+                handler = request.handler)
+    }
+
+    suspend fun getRecommendedMenuByCategory(context: Context, menuCategory: MenuCategory): RecommendationResult {
+        return coroutineScope {
+            async {
+                getRecommendedMenu(RecommendedRequest(
+                        handler = menuCategory.name,
+                        userId = context.userId,
+                        storeId = context.storeId,
+                        pageSize = CAROUSEL_PAGE_SIZE,
+                        offset = 0,
+                ))
+            }.await()
+        }
     }
 }
