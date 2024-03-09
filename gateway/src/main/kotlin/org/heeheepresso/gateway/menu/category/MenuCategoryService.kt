@@ -56,7 +56,7 @@ class MenuCategoryService(
             val storeId = async { userService.getStore(userId) } // TODO: redis로부터 매장 정보 가져오기
             // 추천 서비스로부터 주어진 카테고리에 대한 추천 목록 조회
             val result = recommendationService
-                    .getRecommendedMenuByCategory(Context(userId, storeId.await()), menuCategory)
+                    .getMenuByCategory(Context(userId, storeId.await()), menuCategory)
 
             // 상세 메뉴 서비스로부터 고유 메뉴마다의 상세 메뉴 데이터 조회
             val menuDetailMap = async {

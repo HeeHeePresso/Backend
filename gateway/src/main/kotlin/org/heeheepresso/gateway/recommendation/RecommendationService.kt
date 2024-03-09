@@ -3,10 +3,8 @@ package org.heeheepresso.gateway.recommendation
 import com.google.common.collect.ImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import org.glassfish.jersey.internal.guava.Lists
 import org.heeheepresso.gateway.common.Context
 import org.heeheepresso.gateway.menu.category.MenuCategory
-import org.heeheepresso.gateway.menu.domain.Menu
 import org.springframework.stereotype.Service
 
 @Service
@@ -42,7 +40,7 @@ class RecommendationService {
                 handler = request.handler)
     }
 
-    suspend fun getRecommendedMenuByCategory(context: Context, menuCategory: MenuCategory): RecommendationResult {
+    suspend fun getMenuByCategory(context: Context, menuCategory: MenuCategory): RecommendationResult {
         return coroutineScope {
             async {
                 getRecommendedMenu(RecommendedRequest(
