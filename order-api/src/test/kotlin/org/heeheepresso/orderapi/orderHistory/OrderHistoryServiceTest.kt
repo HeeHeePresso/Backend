@@ -18,29 +18,45 @@ class OrderHistoryServiceTest @Autowired constructor(
 
     init {
         Given("주문 히스토리 서비스 테스트") {
-            When("주문 히스토리를 저장하면") {
-                val request = OrderHistoryCreateRequest(
-                    orderId = 1,
-                    userId = 1,
-                    price = BigDecimal.ZERO,
-                    status = OrderStatus.WAITING,
-                    packagedYn = false,
-                    storedId = 1,
-                    paymentId = 1,
-                    orderMenuHistoryList = emptyList(),
-                )
+            val requestWithoutMenu = OrderHistoryCreateRequest(
+                orderId = 1,
+                userId = 1,
+                price = BigDecimal.ZERO,
+                status = OrderStatus.WAITING,
+                packagedYn = false,
+                storedId = 1,
+                paymentId = 1,
+                orderMenuHistoryList = emptyList(),
+            )
 
+            val orderMenuHistory = listOf(
+                OrderMenuHistoryCreateRequest(menuId = 1, price = BigDecimal.ZERO, quantity = 1),
+                OrderMenuHistoryCreateRequest(menuId = 2, price = BigDecimal.ZERO, quantity = 2)
+            )
+
+            val requestWithMenu = OrderHistoryCreateRequest(
+                orderId = 1,
+                userId = 1,
+                price = BigDecimal.ZERO,
+                status = OrderStatus.WAITING,
+                packagedYn = false,
+                storedId = 1,
+                paymentId = 1,
+                orderMenuHistoryList = orderMenuHistory,
+            )
+
+            When("주문 히스토리를 저장하면") {
                 val now = LocalDateTime.now()
-                val result = orderHistoryService.createOrderHistory(request)
+                val result = orderHistoryService.createOrderHistory(requestWithoutMenu)
 
                 Then("저장한 주문 히스토리 그대로를 반환하고 주문 메뉴 리스트는 null 반환 (주문 메뉴는 별도의 서비스에서 처리)") {
-                    result.orderId shouldBe request.orderId
-                    result.userId shouldBe request.userId
-                    result.price shouldBe request.price
-                    result.status shouldBe request.status
-                    result.packagedYn shouldBe request.packagedYn
-                    result.storedId shouldBe request.storedId
-                    result.paymentId shouldBe request.paymentId
+                    result.orderId shouldBe requestWithoutMenu.orderId
+                    result.userId shouldBe requestWithoutMenu.userId
+                    result.price shouldBe requestWithoutMenu.price
+                    result.status shouldBe requestWithoutMenu.status
+                    result.packagedYn shouldBe requestWithoutMenu.packagedYn
+                    result.storedId shouldBe requestWithoutMenu.storedId
+                    result.paymentId shouldBe requestWithoutMenu.paymentId
                     result.orderMenuHistoryList?.size shouldBe 0
                     result.createdBy shouldBe "system"
                     result.createdDate shouldBeAfter now
@@ -50,38 +66,48 @@ class OrderHistoryServiceTest @Autowired constructor(
             }
 
             When("주문 메뉴와 함께 히스토리를 저장하면") {
-                val orderMenuHistory = listOf(
-                    OrderMenuHistoryCreateRequest(menuId = 1, price = BigDecimal.ZERO, quantity = 1),
-                    OrderMenuHistoryCreateRequest(menuId = 2, price = BigDecimal.ZERO, quantity = 2)
-                )
-
-                val request = OrderHistoryCreateRequest(
-                    orderId = 1,
-                    userId = 1,
-                    price = BigDecimal.ZERO,
-                    status = OrderStatus.WAITING,
-                    packagedYn = false,
-                    storedId = 1,
-                    paymentId = 1,
-                    orderMenuHistoryList = orderMenuHistory,
-                )
-
                 val now = LocalDateTime.now()
-                val result = orderHistoryService.createOrderHistory(request)
+                val result = orderHistoryService.createOrderHistory(requestWithMenu)
 
                 Then("저장한 주문 및 주문 메뉴 히스토리 그대로 반환") {
-                    result.orderId shouldBe request.orderId
-                    result.userId shouldBe request.userId
-                    result.price shouldBe request.price
-                    result.status shouldBe request.status
-                    result.packagedYn shouldBe request.packagedYn
-                    result.storedId shouldBe request.storedId
-                    result.paymentId shouldBe request.paymentId
+                    result.orderId shouldBe requestWithMenu.orderId
+                    result.userId shouldBe requestWithMenu.userId
+                    result.price shouldBe requestWithMenu.price
+                    result.status shouldBe requestWithMenu.status
+                    result.packagedYn shouldBe requestWithMenu.packagedYn
+                    result.storedId shouldBe requestWithMenu.storedId
+                    result.paymentId shouldBe requestWithMenu.paymentId
                     result.orderMenuHistoryList?.size shouldBe 2
-                    request.orderMenuHistoryList.forEachIndexed { index, orderMenuHistory ->
-                        orderMenuHistory.menuId shouldBe request.orderMenuHistoryList[index].menuId
-                        orderMenuHistory.price shouldBe request.orderMenuHistoryList[index].price
-                        orderMenuHistory.quantity shouldBe request.orderMenuHistoryList[index].quantity
+                    requestWithMenu.orderMenuHistoryList.forEachIndexed { index, orderMenuHistory ->
+                        orderMenuHistory.menuId shouldBe requestWithMenu.orderMenuHistoryList[index].menuId
+                        orderMenuHistory.price shouldBe requestWithMenu.orderMenuHistoryList[index].price
+                        orderMenuHistory.quantity shouldBe requestWithMenu.orderMenuHistoryList[index].quantity
+                    }
+                    result.createdBy shouldBe "system"
+                    result.createdDate shouldBeAfter now
+                    result.modifiedBy shouldBe "system"
+                    result.modifiedDate shouldBeAfter now
+                }
+            }
+
+            When("주문 히스토리를 ID로 조회하면 (querydsl 테스트)") {
+                val now = LocalDateTime.now()
+                val result = orderHistoryService.createOrderHistory(requestWithMenu)
+                val orderHistory = orderHistoryService.getOrderHistoryById(result.id!!)
+
+                Then("주문 히스토리와 그에 딸려 있는 주문 메뉴 히스토리까지 반환 (N+1 문제 없이)") {
+                    orderHistory.orderId shouldBe requestWithMenu.orderId
+                    orderHistory.userId shouldBe requestWithMenu.userId
+                    orderHistory.price.compareTo(requestWithMenu.price) shouldBe 0
+                    orderHistory.status shouldBe requestWithMenu.status
+                    orderHistory.packagedYn shouldBe requestWithMenu.packagedYn
+                    orderHistory.storedId shouldBe requestWithMenu.storedId
+                    orderHistory.paymentId shouldBe requestWithMenu.paymentId
+                    orderHistory.orderMenuHistoryList?.size shouldBe requestWithMenu.orderMenuHistoryList.size
+                    orderHistory.orderMenuHistoryList?.forEachIndexed { index, orderMenuHistory ->
+                        orderMenuHistory.menuId shouldBe requestWithMenu.orderMenuHistoryList[index].menuId
+                        orderMenuHistory.price.compareTo(requestWithMenu.orderMenuHistoryList[index].price) shouldBe 0
+                        orderMenuHistory.quantity shouldBe requestWithMenu.orderMenuHistoryList[index].quantity
                     }
                     result.createdBy shouldBe "system"
                     result.createdDate shouldBeAfter now
