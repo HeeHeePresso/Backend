@@ -7,8 +7,8 @@ import org.heeheepresso.gateway.common.Context
 import org.heeheepresso.gateway.menu.category.dto.MenuCategoryList
 import org.heeheepresso.gateway.menu.category.dto.RecommendedCarousel
 import org.heeheepresso.gateway.menu.category.dto.RecommendedPageResponse
-import org.heeheepresso.gateway.menu.domain.MenuDetail
 import org.heeheepresso.gateway.menu.menuDetail.MenuDetailService
+import org.heeheepresso.gateway.menu.moreinfo.MoreInfo
 import org.heeheepresso.gateway.recommendation.RecommendationHandler
 import org.heeheepresso.gateway.recommendation.RecommendationHandler.*
 import org.heeheepresso.gateway.recommendation.RecommendationResultSet
@@ -21,6 +21,7 @@ class MenuCategoryService(
     private val userService: UserService,
     private val recommendationService: RecommendationService,
     private val menuDetailService: MenuDetailService,
+    private val moreInfos: List<MoreInfo>
 ) {
 
     companion object {
@@ -35,25 +36,19 @@ class MenuCategoryService(
                 getContext(
                     userId = userId,
                     category = null,
-                    handlers = RECOMMENDED_PAGE_HANDLERS
+                    handlers = RECOMMENDED_PAGE_HANDLERS,
+                    moreInfos = moreInfos,
                 )
             )
 
-            val menuDetailMap = async {
-                menuDetailService
-                    .getMenuDetails(resultSet.getTotalMenuIds()).associateBy { it.menuId }
-            }
-
-            buildRecommendedPageResponse(resultSet, menuDetailMap.await())
+            buildRecommendedPageResponse(resultSet)
         }
     }
 
-    private fun buildRecommendedPageResponse(
-        resultSet: RecommendationResultSet, menuDetails: Map<Long, MenuDetail>
-    ): RecommendedPageResponse {
+    private fun buildRecommendedPageResponse(resultSet: RecommendationResultSet): RecommendedPageResponse {
 
         val recommendedCarousels = resultSet.results
-            .map { RecommendedCarousel(it.handler, it.getMenus(menuDetails)) }
+            .map { RecommendedCarousel(it.handler, it.recommendedMenus) }
         return RecommendedPageResponse(recommendedCarousels)
     }
 
@@ -63,20 +58,18 @@ class MenuCategoryService(
                 getContext(
                     userId = userId,
                     category = category,
-                    handlers = ImmutableList.of<RecommendationHandler>(MENU_CATEGORY_HANDLER)
+                    handlers = ImmutableList.of<RecommendationHandler>(MENU_CATEGORY_HANDLER),
+                    moreInfos = moreInfos,
                 )
             )
 
-            val menuDetailMap = async {
-                menuDetailService
-                    .getMenuDetails(resultSet.getTotalMenuIds()).associateBy { it.menuId }
-            }
-
-            MenuCategoryList(resultSet.getMenuList(MENU_CATEGORY_HANDLER, menuDetailMap.await()))
+            MenuCategoryList(resultSet.getMenuList(MENU_CATEGORY_HANDLER))
         }
     }
 
-    private suspend fun getContext(userId: Long, category: String?, handlers: List<RecommendationHandler>): Context {
+    private suspend fun getContext(
+        userId: Long, category: String?, handlers: List<RecommendationHandler>, moreInfos: List<MoreInfo>?
+    ): Context {
         return coroutineScope {
             val storeId = async { userService.getStore(userId) }
             val menuCategory = if (category != null) MenuCategory.valueOf(category) else null
@@ -84,7 +77,8 @@ class MenuCategoryService(
                 userId = userId,
                 storeId = storeId.await(),
                 menuCategory = menuCategory,
-                handlers = handlers
+                handlers = handlers,
+                moreInfos = moreInfos,
             )
         }
     }
