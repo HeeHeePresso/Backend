@@ -18,26 +18,30 @@ import org.springframework.stereotype.Service
 
 @Service
 class MenuCategoryService(
-        private val userService: UserService,
-        private val recommendationService: RecommendationService,
-        private val menuDetailService: MenuDetailService,
+    private val userService: UserService,
+    private val recommendationService: RecommendationService,
+    private val menuDetailService: MenuDetailService,
 ) {
 
     companion object {
         private val RECOMMENDED_PAGE_HANDLERS =
-                ImmutableList.of<RecommendationHandler>(NEWLY_RELEASED, HIGHLY_RECOMMENDED, BREAD)
+            ImmutableList.of<RecommendationHandler>(NEWLY_RELEASED, HIGHLY_RECOMMENDED, BREAD)
         private val MENU_CATEGORY_HANDLER = MENU_CATEGORY
     }
 
     suspend fun getRecommendedPage(userId: Long): RecommendedPageResponse {
         return coroutineScope {
-            val storeId = async { userService.getStore(userId) }
-            val resultSet = recommendationService
-                    .getRecommendedMenus(Context(userId = userId, storeId = storeId.await(), null), RECOMMENDED_PAGE_HANDLERS)
+            val resultSet = recommendationService.getRecommendedMenus(
+                getContext(
+                    userId = userId,
+                    category = null,
+                    handlers = RECOMMENDED_PAGE_HANDLERS
+                )
+            )
 
             val menuDetailMap = async {
                 menuDetailService
-                        .getMenuDetails(resultSet.getTotalMenuIds()).associateBy { it.menuId }
+                    .getMenuDetails(resultSet.getTotalMenuIds()).associateBy { it.menuId }
             }
 
             buildRecommendedPageResponse(resultSet, menuDetailMap.await())
@@ -45,19 +49,23 @@ class MenuCategoryService(
     }
 
     private fun buildRecommendedPageResponse(
-            resultSet: RecommendationResultSet, menuDetails: Map<Long, MenuDetail>
+        resultSet: RecommendationResultSet, menuDetails: Map<Long, MenuDetail>
     ): RecommendedPageResponse {
+
         val recommendedCarousels = resultSet.results
-                .map { RecommendedCarousel(it.handler, it.getMenus(menuDetails)) }
+            .map { RecommendedCarousel(it.handler, it.getMenus(menuDetails)) }
         return RecommendedPageResponse(recommendedCarousels)
     }
 
     suspend fun getPageByCategory(userId: Long, category: String): MenuCategoryList {
         return coroutineScope {
-            val storeId = async { userService.getStore(userId) }
-            val resultSet = recommendationService
-                .getRecommendedMenus(Context(userId = userId, storeId = storeId.await(), MenuCategory.valueOf(category)), ImmutableList.of<RecommendationHandler>(
-                    MENU_CATEGORY_HANDLER))
+            val resultSet = recommendationService.getRecommendedMenus(
+                getContext(
+                    userId = userId,
+                    category = category,
+                    handlers = ImmutableList.of<RecommendationHandler>(MENU_CATEGORY_HANDLER)
+                )
+            )
 
             val menuDetailMap = async {
                 menuDetailService
@@ -65,6 +73,19 @@ class MenuCategoryService(
             }
 
             MenuCategoryList(resultSet.getMenuList(MENU_CATEGORY_HANDLER, menuDetailMap.await()))
+        }
+    }
+
+    private suspend fun getContext(userId: Long, category: String?, handlers: List<RecommendationHandler>): Context {
+        return coroutineScope {
+            val storeId = async { userService.getStore(userId) }
+            val menuCategory = if (category != null) MenuCategory.valueOf(category) else null
+            Context(
+                userId = userId,
+                storeId = storeId.await(),
+                menuCategory = menuCategory,
+                handlers = handlers
+            )
         }
     }
 }

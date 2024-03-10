@@ -15,11 +15,10 @@ class RecommendationService {
         private const val CAROUSEL_PAGE_SIZE = 9
     }
 
-    suspend fun getRecommendedMenus(
-            context: Context, handlers: ImmutableList<RecommendationHandler>): RecommendationResultSet {
+    suspend fun getRecommendedMenus(context: Context): RecommendationResultSet {
         val resultSet: ArrayList<RecommendationResult> = ArrayList()
         coroutineScope {
-            handlers.map {
+            context.handlers.map {
                 val request = RecommendedRequest(
                         handler = it.name,
                         where = null,
@@ -40,18 +39,5 @@ class RecommendationService {
         return RecommendationResult(
                 recommendedMenus = ImmutableList.of(RecommendedMenu(1)),
                 handler = request.handler)
-    }
-
-    suspend fun getMenuByCategory(context: Context, menuCategory: MenuCategory): RecommendationResult {
-        return coroutineScope {
-                getRecommendedMenu(RecommendedRequest(
-                        handler = RecommendationHandler.MENU_CATEGORY.name,
-                        where = addCategoryFilter(menuCategory),
-                        userId = context.userId,
-                        storeId = context.storeId,
-                        pageSize = CAROUSEL_PAGE_SIZE,
-                        offset = 0,
-                ))
-        }
     }
 }
