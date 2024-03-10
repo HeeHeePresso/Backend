@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.heeheepresso.gateway.common.Context
+import org.heeheepresso.gateway.menu.category.dto.MenuCategoryList
 import org.heeheepresso.gateway.menu.category.dto.RecommendedCarousel
 import org.heeheepresso.gateway.menu.category.dto.RecommendedPageResponse
 import org.heeheepresso.gateway.menu.domain.MenuDetail
@@ -25,13 +26,14 @@ class MenuCategoryService(
     companion object {
         private val RECOMMENDED_PAGE_HANDLERS =
                 ImmutableList.of<RecommendationHandler>(NEWLY_RELEASED, HIGHLY_RECOMMENDED, BREAD)
+        private val MENU_CATEGORY_HANDLER = MENU_CATEGORY
     }
 
     suspend fun getRecommendedPage(userId: Long): RecommendedPageResponse {
         return coroutineScope {
             val storeId = async { userService.getStore(userId) }
             val resultSet = recommendationService
-                    .getRecommendedMenus(Context(userId = userId, storeId = storeId.await()), RECOMMENDED_PAGE_HANDLERS)
+                    .getRecommendedMenus(Context(userId = userId, storeId = storeId.await(), null), RECOMMENDED_PAGE_HANDLERS)
 
             val menuDetailMap = async {
                 menuDetailService
@@ -50,20 +52,19 @@ class MenuCategoryService(
         return RecommendedPageResponse(recommendedCarousels)
     }
 
-    suspend fun getPageByCategory(userId: Long, category: String): RecommendedCarousel {
-        val menuCategory = MenuCategory.valueOf(category)
+    suspend fun getPageByCategory(userId: Long, category: String): MenuCategoryList {
         return coroutineScope {
-            val storeId = async { userService.getStore(userId) } // TODO: redis로부터 매장 정보 가져오기
-
-            val result = async { recommendationService
-                    .getMenuByCategory(Context(userId, storeId.await()), menuCategory) }
-            val recommendationResult = result.await()
+            val storeId = async { userService.getStore(userId) }
+            val resultSet = recommendationService
+                .getRecommendedMenus(Context(userId = userId, storeId = storeId.await(), MenuCategory.valueOf(category)), ImmutableList.of<RecommendationHandler>(
+                    MENU_CATEGORY_HANDLER))
 
             val menuDetailMap = async {
                 menuDetailService
-                        .getMenuDetails(recommendationResult.recommendedMenus.map { it.menuId }).associateBy { it.menuId }
+                    .getMenuDetails(resultSet.getTotalMenuIds()).associateBy { it.menuId }
             }
-            RecommendedCarousel(menuCategory.name, recommendationResult.getMenus(menuDetailMap.await()))
+
+            MenuCategoryList(resultSet.getMenuList(MENU_CATEGORY_HANDLER, menuDetailMap.await()))
         }
     }
 }
