@@ -21,6 +21,7 @@ class RecommendationService {
             handlers.map {
                 val request = RecommendedRequest(
                         handler = it.name,
+                        menuCategory = null, // 정해진 카테고리가 없으므로 null 처리
                         userId = context.userId,
                         storeId = context.storeId,
                         pageSize = CAROUSEL_PAGE_SIZE,
@@ -44,7 +45,8 @@ class RecommendationService {
         return coroutineScope {
             async {
                 getRecommendedMenu(RecommendedRequest(
-                        handler = menuCategory.name,
+                        handler = RecommendationHandler.MENU_CATEGORY.name, // 카테고리 메뉴에 대한 요청
+                        menuCategory = menuCategory,
                         userId = context.userId,
                         storeId = context.storeId,
                         pageSize = CAROUSEL_PAGE_SIZE,
