@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.heeheepresso.gateway.common.Context
+import org.heeheepresso.gateway.menu.category.RecommendationFilterUtils.Companion.addCategoryFilter
 import org.heeheepresso.gateway.menu.category.MenuCategory
 import org.springframework.stereotype.Service
 
@@ -21,7 +22,7 @@ class RecommendationService {
             handlers.map {
                 val request = RecommendedRequest(
                         handler = it.name,
-                        menuCategory = null, // 정해진 카테고리가 없으므로 null 처리
+                        where = null,
                         userId = context.userId,
                         storeId = context.storeId,
                         pageSize = CAROUSEL_PAGE_SIZE,
@@ -43,16 +44,14 @@ class RecommendationService {
 
     suspend fun getMenuByCategory(context: Context, menuCategory: MenuCategory): RecommendationResult {
         return coroutineScope {
-            async {
                 getRecommendedMenu(RecommendedRequest(
-                        handler = RecommendationHandler.MENU_CATEGORY.name, // 카테고리 메뉴에 대한 요청
-                        menuCategory = menuCategory,
+                        handler = RecommendationHandler.MENU_CATEGORY.name,
+                        where = addCategoryFilter(menuCategory),
                         userId = context.userId,
                         storeId = context.storeId,
                         pageSize = CAROUSEL_PAGE_SIZE,
                         offset = 0,
                 ))
-            }.await()
         }
     }
 }
