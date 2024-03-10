@@ -4,8 +4,7 @@ import com.google.common.collect.ImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.heeheepresso.gateway.common.Context
-import org.heeheepresso.gateway.menu.category.CategoryFilterUtils
-import org.heeheepresso.gateway.menu.category.CategoryFilterUtils.Companion.addCategoryFilter
+import org.heeheepresso.gateway.menu.category.RecommendationFilterUtils.Companion.addCategoryFilter
 import org.heeheepresso.gateway.menu.category.MenuCategory
 import org.springframework.stereotype.Service
 

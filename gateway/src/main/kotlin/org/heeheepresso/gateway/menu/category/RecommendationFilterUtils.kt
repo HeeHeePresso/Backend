@@ -1,6 +1,6 @@
 package org.heeheepresso.gateway.menu.category
 
-class CategoryFilterUtils {
+class RecommendationFilterUtils {
 
     companion object {
         fun addCategoryFilter(menuCategory: MenuCategory): String {
