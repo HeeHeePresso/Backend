@@ -54,17 +54,16 @@ class MenuCategoryService(
         val menuCategory = MenuCategory.valueOf(category)
         return coroutineScope {
             val storeId = async { userService.getStore(userId) } // TODO: redis로부터 매장 정보 가져오기
-            // 추천 서비스로부터 주어진 카테고리에 대한 추천 목록 조회
-            val result = recommendationService
-                    .getMenuByCategory(Context(userId, storeId.await()), menuCategory)
 
-            // 상세 메뉴 서비스로부터 고유 메뉴마다의 상세 메뉴 데이터 조회
+            val result = async { recommendationService
+                    .getMenuByCategory(Context(userId, storeId.await()), menuCategory) }
+            val recommendationResult = result.await()
+
             val menuDetailMap = async {
                 menuDetailService
-                        .getMenuDetails(result.recommendedMenus.map { it.menuId }).associateBy { it.menuId }
+                        .getMenuDetails(recommendationResult.recommendedMenus.map { it.menuId }).associateBy { it.menuId }
             }
-            // 최종 메뉴 목록 생성 및 반환
-            RecommendedCarousel(menuCategory.name, result.getMenus(menuDetailMap.await()))
+            RecommendedCarousel(menuCategory.name, recommendationResult.getMenus(menuDetailMap.await()))
         }
     }
 }
