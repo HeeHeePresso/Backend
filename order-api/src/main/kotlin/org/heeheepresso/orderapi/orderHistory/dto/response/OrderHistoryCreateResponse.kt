@@ -1,6 +1,6 @@
 package org.heeheepresso.orderapi.orderHistory.dto.response
 
-import org.heeheepresso.orderapi.order.OrderStatus
+import org.heeheepresso.orderapi.order.domain.model.OrderStatus
 import org.heeheepresso.orderapi.orderHistory.menu.dto.OrderMenuHistoryDto
 import java.math.BigDecimal
 import java.time.LocalDateTime

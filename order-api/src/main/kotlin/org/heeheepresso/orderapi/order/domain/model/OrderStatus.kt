@@ -1,4 +1,4 @@
-package org.heeheepresso.orderapi.order
+package org.heeheepresso.orderapi.order.domain.model
 
 enum class OrderStatus(
     val desc: String
