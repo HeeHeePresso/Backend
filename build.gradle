@@ -1,0 +1,20 @@
+buildscript {
+    ext {
+        springBootVersion = '3.2.2'
+    }
+    repositories {
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+        mavenLocal()
+    }
+}
+
+subprojects {
+    group = 'heeheepresso'
+    version = '1.0.0-SNAPSHOT'
+
+    wrapper {
+        gradleVersion = "8.5"
+        distributionUrl = "https://services.gradle.org/distributions/gradle-8.5-all.zip"
+    }
+}
