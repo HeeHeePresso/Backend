@@ -3,9 +3,9 @@ package org.heeheepresso.gateway.recommendation
 data class RecommendationResultSet(
     val results: List<RecommendationResult>
 ) {
-    fun getTotalMenuIds(): List<Long> {
+    fun getMenuList(handler: RecommendationHandler): List<RecommendedMenu>? {
         return this.results
-            .flatMap { it.recommendedMenus }
-            .map { it.menuId }
+            .firstOrNull { it.handler == handler.name }
+            ?.recommendedMenus
     }
 }

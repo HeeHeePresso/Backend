@@ -1,7 +1,7 @@
 package org.heeheepresso.gateway.menu.category
 
 import mu.KotlinLogging
-import org.heeheepresso.gateway.menu.category.dto.RecommendedCarousel
+import org.heeheepresso.gateway.menu.category.dto.MenuCategoryList
 import org.heeheepresso.gateway.menu.category.dto.RecommendedPageResponse
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -25,7 +25,7 @@ class MenuCategoryController(
     @GetMapping("/{category}")
     suspend fun getPageByCategory(
             @RequestParam("userId") userId: Long,
-            @PathVariable("category") category: String): RecommendedCarousel {
+            @PathVariable("category") category: String): MenuCategoryList {
         return menuCategoryService.getPageByCategory(userId, category)
     }
 }
