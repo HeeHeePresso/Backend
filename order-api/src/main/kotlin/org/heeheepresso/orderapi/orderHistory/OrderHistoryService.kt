@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-@Transactional(readOnly = true)
 class OrderHistoryService(
     private val orderHistoryRepository: OrderHistoryRepository,
     private val orderHistoryMapper: OrderHistoryMapper,
@@ -20,5 +19,10 @@ class OrderHistoryService(
     @Transactional
     fun createOrderHistory(request: OrderHistoryCreateRequest): OrderHistory =
         orderHistoryRepository.save(OrderHistory.of(request))
+
+    fun getOrderHistoryById(id: Long): OrderHistory {
+        // TODO: Exception 정리 필요 
+        return orderHistoryRepository.findDetailById(id) ?: throw Exception()
+    }
 
 }
