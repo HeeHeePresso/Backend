@@ -28,8 +28,14 @@ repositories {
     mavenCentral()
 }
 
+
 val kotestVersion = "4.4.3"
+val grpcSpringBootStarterVersion = "4.4.5"
+
 dependencies {
+    // grpc
+    api(project(":order-grpc"))
+
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -52,6 +58,10 @@ dependencies {
     kapt ("com.querydsl:querydsl-apt:5.0.0:jakarta")
     kapt ("jakarta.annotation:jakarta.annotation-api")
     kapt ("jakarta.persistence:jakarta.persistence-api")
+
+    // grpc
+    implementation("io.github.lognet:grpc-spring-boot-starter:$grpcSpringBootStarterVersion")
+
 }
 
 tasks.withType<KotlinCompile> {
