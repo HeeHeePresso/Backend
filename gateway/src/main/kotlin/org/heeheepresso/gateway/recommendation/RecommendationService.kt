@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.heeheepresso.gateway.common.Context
+import org.heeheepresso.gateway.menu.category.RecommendationFilterUtils.Companion.addCategoryFilter
 import org.heeheepresso.gateway.menu.moreinfo.MenuDetailInfo
 import org.heeheepresso.gateway.menu.moreinfo.MoreInfo
 import org.springframework.stereotype.Service
@@ -21,7 +22,7 @@ class RecommendationService {
             context.handlers.map {
                 val request = RecommendedRequest(
                     handler = it.name,
-                    where = null,
+                    where = context.menuCategory?.let { category -> addCategoryFilter(category) },
                     userId = context.userId,
                     storeId = context.storeId,
                     pageSize = CAROUSEL_PAGE_SIZE,

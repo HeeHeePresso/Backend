@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service
 class MenuCategoryService(
     private val userService: UserService,
     private val recommendationService: RecommendationService,
-    private val menuDetailService: MenuDetailService,
     private val moreInfos: List<MoreInfo>
 ) {
 
