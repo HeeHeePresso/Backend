@@ -41,4 +41,8 @@ class Order(
 
     var packagedYn = packagedYn
 
+    fun modifyStatus(nextStatus: OrderStatus) {
+        status.checkCanChangeable(nextStatus)
+        status = nextStatus
+    }
 }
