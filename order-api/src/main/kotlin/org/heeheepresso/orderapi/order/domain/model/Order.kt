@@ -28,13 +28,17 @@ class Order(
     @Embedded
     var paymentInfo = PaymentInfo(paymentId, amount)
 
+    @OneToMany(
+        cascade = [CascadeType.PERSIST, CascadeType.REMOVE],
+        orphanRemoval = true
+    )
+    @JoinColumn(name = "order_id")
+    @OrderColumn(name = "list_idx")
+    val orderMenuList: List<OrderMenu> = orderMenuList
+
     @Enumerated(EnumType.STRING)
     var status = OrderStatus.REQUESTED
 
     var packagedYn = packagedYn
-
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "order_menu", joinColumns = [JoinColumn(name = "order_id")])
-    val orderMenuList: List<OrderMenu> = orderMenuList
 
 }
