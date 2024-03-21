@@ -1,9 +1,8 @@
-package org.heeheepresso.orderapi.orderHistory.menu
+package org.heeheepresso.orderapi.orderHistory.domain.model
 
 import jakarta.persistence.*
 import org.heeheepresso.orderapi.common.BaseEntity
-import org.heeheepresso.orderapi.orderHistory.OrderHistory
-import org.heeheepresso.orderapi.orderHistory.menu.dto.request.OrderMenuHistoryCreateRequest
+import org.heeheepresso.orderapi.orderHistory.dto.request.OrderMenuHistoryCreateRequest
 import java.math.BigDecimal
 
 @Entity

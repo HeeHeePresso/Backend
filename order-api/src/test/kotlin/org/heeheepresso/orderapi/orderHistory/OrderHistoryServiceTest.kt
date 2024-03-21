@@ -4,8 +4,9 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.date.shouldBeAfter
 import io.kotest.matchers.shouldBe
 import org.heeheepresso.orderapi.order.domain.model.OrderStatus
+import org.heeheepresso.orderapi.orderHistory.aplication.OrderHistoryService
 import org.heeheepresso.orderapi.orderHistory.dto.request.OrderHistoryCreateRequest
-import org.heeheepresso.orderapi.orderHistory.menu.dto.request.OrderMenuHistoryCreateRequest
+import org.heeheepresso.orderapi.orderHistory.dto.request.OrderMenuHistoryCreateRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.math.BigDecimal

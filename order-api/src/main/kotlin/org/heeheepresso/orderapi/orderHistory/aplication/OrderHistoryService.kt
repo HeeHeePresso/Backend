@@ -1,7 +1,9 @@
-package org.heeheepresso.orderapi.orderHistory
+package org.heeheepresso.orderapi.orderHistory.aplication
 
 import org.heeheepresso.orderapi.common.ApiException
 import org.heeheepresso.orderapi.common.ApiStatus
+import org.heeheepresso.orderapi.orderHistory.domain.model.OrderHistory
+import org.heeheepresso.orderapi.orderHistory.domain.repository.OrderHistoryRepository
 import org.heeheepresso.orderapi.orderHistory.dto.request.OrderHistoryCreateRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

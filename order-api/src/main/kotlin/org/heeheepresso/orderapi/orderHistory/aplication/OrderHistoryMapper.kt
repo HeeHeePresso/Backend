@@ -1,5 +1,6 @@
-package org.heeheepresso.orderapi.orderHistory
+package org.heeheepresso.orderapi.orderHistory.aplication
 
+import org.heeheepresso.orderapi.orderHistory.domain.model.OrderHistory
 import org.heeheepresso.orderapi.orderHistory.dto.response.OrderHistoryCreateResponse
 import org.mapstruct.Mapper
 
