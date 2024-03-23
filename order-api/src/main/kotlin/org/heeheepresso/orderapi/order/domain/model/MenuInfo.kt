@@ -1,12 +1,11 @@
 package org.heeheepresso.orderapi.order.domain.model
 
 import jakarta.persistence.Embeddable
-import org.heeheepresso.orderapi.common.BaseEntity
 import java.math.BigDecimal
 
 @Embeddable
-data class Option(
-    val name: String,
+data class MenuInfo(
+    val menuId: Long,
+    val menuName: String,
     val price: BigDecimal,
-    val quantity: Int,
-) : BaseEntity()
+)

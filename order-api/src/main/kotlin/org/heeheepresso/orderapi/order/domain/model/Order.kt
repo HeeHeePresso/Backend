@@ -9,6 +9,7 @@ import java.math.BigDecimal
 class Order(
     userId: Long,
     storeId: Long,
+    storeName: String,
     paymentId: Long,
     amount: BigDecimal,
     packagedYn: Boolean,
@@ -23,15 +24,14 @@ class Order(
     val buyer: Buyer = Buyer(userId)
 
     @Embedded
-    val store = Store(storeId)
+    val store = Store(storeId, storeName)
 
     @Embedded
     var paymentInfo = PaymentInfo(paymentId, amount)
 
     @OneToMany(
         cascade = [CascadeType.PERSIST, CascadeType.REMOVE],
-        orphanRemoval = true
-    )
+        orphanRemoval = true)
     @JoinColumn(name = "order_id")
     @OrderColumn(name = "list_idx")
     val orderMenuList: List<OrderMenu> = orderMenuList
@@ -44,5 +44,9 @@ class Order(
     fun modifyStatus(nextStatus: OrderStatus) {
         status.checkCanChangeable(nextStatus)
         status = nextStatus
+    }
+
+    fun getTotalAmount(): BigDecimal {
+        return paymentInfo.amount
     }
 }
