@@ -2,19 +2,18 @@ package org.heeheepresso.orderapi.order.domain.model
 
 import jakarta.persistence.*
 import org.heeheepresso.orderapi.common.BaseEntity
-import java.math.BigDecimal
 
 @Table(name = "order_menu")
 @Entity
 class OrderMenu (
     menuId: Long,
     menuName: String,
-    price: BigDecimal,
+    price: Money,
     quantity: Int,
     options: List<Option>
 ) : BaseEntity() {
-    fun getTotalAmount(): BigDecimal {
-        return menuInfo.price + options.sumOf { it.price.multiply(BigDecimal(it.quantity)) }
+    fun getTotalAmount(): Int {
+        return menuInfo.price.getIntValue() + options.sumOf { it.price.getIntValue() * it.quantity }
     }
 
     @Id

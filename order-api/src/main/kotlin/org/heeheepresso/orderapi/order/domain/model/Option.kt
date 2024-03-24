@@ -1,12 +1,16 @@
 package org.heeheepresso.orderapi.order.domain.model
 
+import jakarta.persistence.AttributeOverride
+import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
+import jakarta.persistence.Embedded
 import org.heeheepresso.orderapi.common.BaseEntity
-import java.math.BigDecimal
 
 @Embeddable
 data class Option(
     val name: String,
-    val price: BigDecimal,
+    @Embedded
+    @AttributeOverride(name = "value", column = Column(name = "price"))
+    val price: Money,
     val quantity: Int,
 ) : BaseEntity()

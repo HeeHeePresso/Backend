@@ -1,11 +1,10 @@
 package org.heeheepresso.orderapi.order.dto.request
 
 import org.heeheepresso.orderapi.order.domain.model.Order
-import java.math.BigDecimal
 
 data class OrderCreateRequest(
     val userId: Long,
-    val amount: BigDecimal,
+    val amount: Int,
     val packagedYn: Boolean,
     val storedId: Long,
     val storeName: String,

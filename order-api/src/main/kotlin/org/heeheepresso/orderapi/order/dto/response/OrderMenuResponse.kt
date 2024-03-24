@@ -1,19 +1,18 @@
 package org.heeheepresso.orderapi.order.dto.response
 
 import org.heeheepresso.orderapi.order.domain.model.OrderMenu
-import java.math.BigDecimal
 
 data class OrderMenuResponse(
     val name: String,
-    val price: BigDecimal,
+    val price: Int,
     val options: List<OrderMenuOptionResponse>,
-    val totalAmount: BigDecimal,
+    val totalAmount: Int,
 ) {
     companion object {
         fun from(orderMenu: OrderMenu): OrderMenuResponse {
             return OrderMenuResponse(
                 name = orderMenu.menuInfo.menuName,
-                price = orderMenu.menuInfo.price,
+                price = orderMenu.menuInfo.price.getIntValue(),
                 options = orderMenu.options.map {
                     OrderMenuOptionResponse.from(it)
                 },

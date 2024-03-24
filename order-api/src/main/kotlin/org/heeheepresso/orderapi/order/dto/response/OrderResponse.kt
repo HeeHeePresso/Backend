@@ -1,13 +1,12 @@
 package org.heeheepresso.orderapi.order.dto.response
 
 import org.heeheepresso.orderapi.order.domain.model.Order
-import java.math.BigDecimal
 
 
 data class OrderResponse(
     val orderId: Long,
     val store: String,
-    val totalAmount: BigDecimal,
+    val totalAmount: Int,
     val menuList: List<OrderMenuResponse>
 ) {
     companion object {
@@ -15,7 +14,7 @@ data class OrderResponse(
             return OrderResponse(
                 orderId = order.id ?: throw RuntimeException(),
                 store = order.store.storeName,
-                totalAmount = order.getTotalAmount(),
+                totalAmount = order.getTotalAmount().getIntValue(),
                 menuList = order.orderMenuList.map {
                     OrderMenuResponse.from(it)
                 }

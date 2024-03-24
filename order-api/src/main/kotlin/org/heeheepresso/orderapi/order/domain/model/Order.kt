@@ -2,7 +2,6 @@ package org.heeheepresso.orderapi.order.domain.model
 
 import jakarta.persistence.*
 import org.heeheepresso.orderapi.common.BaseEntity
-import java.math.BigDecimal
 
 @Table(name = "orders")
 @Entity
@@ -11,7 +10,7 @@ class Order(
     storeId: Long,
     storeName: String,
     paymentId: Long,
-    amount: BigDecimal,
+    amount: Int,
     packagedYn: Boolean,
     orderMenuList: List<OrderMenu>
 ) : BaseEntity() {
@@ -27,7 +26,7 @@ class Order(
     val store = Store(storeId, storeName)
 
     @Embedded
-    var paymentInfo = PaymentInfo(paymentId, amount)
+    var paymentInfo = PaymentInfo(paymentId, Money(amount))
 
     @OneToMany(
         cascade = [CascadeType.PERSIST, CascadeType.REMOVE],
@@ -46,7 +45,7 @@ class Order(
         status = nextStatus
     }
 
-    fun getTotalAmount(): BigDecimal {
+    fun getTotalAmount(): Money {
         return paymentInfo.amount
     }
 }

@@ -4,12 +4,12 @@ import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import org.heeheepresso.orderapi.order.domain.model.Money
 import org.heeheepresso.orderapi.order.domain.model.Option
 import org.heeheepresso.orderapi.order.domain.model.OrderStatus
 import org.heeheepresso.orderapi.order.dto.request.OrderCreateRequest
 import org.heeheepresso.orderapi.order.dto.request.OrderMenuCreateRequest
 import org.springframework.boot.test.context.SpringBootTest
-import java.math.BigDecimal
 
 @SpringBootTest
 class OrderServiceIntegrationTest(
@@ -26,7 +26,7 @@ class OrderServiceIntegrationTest(
                 result.store.storeId shouldBe request.storedId
                 result.store.storeName shouldBe request.storeName
                 result.paymentInfo.paymentId shouldBe request.paymentId
-                result.paymentInfo.amount shouldBe request.amount
+                result.paymentInfo.amount.getIntValue() shouldBe request.amount
                 result.orderMenuList shouldHaveSize request.orderMenuList.size
                 result.packagedYn shouldBe request.packagedYn
             }
@@ -58,10 +58,8 @@ class OrderServiceIntegrationTest(
                 for ((idx, resultMenu) in resultMenuList.withIndex()) {
                     val requestMenu = requestMenuList[idx]
                     resultMenu.name shouldBe requestMenu.menuName
-//                    resultMenu.price shouldBe requestMenu.price
-                    resultMenu.price.compareTo(requestMenu.price) shouldBe 0
-//                    resultMenu.totalAmount shouldBe requestMenu.totalAmount
-                    resultMenu.totalAmount.compareTo(requestMenu.totalAmount) shouldBe 0
+                    resultMenu.price shouldBe requestMenu.price
+                    resultMenu.totalAmount shouldBe requestMenu.totalAmount
                 }
             }
             val resultOptions = resultMenuList[0].options
@@ -69,12 +67,14 @@ class OrderServiceIntegrationTest(
             it("응답 메뉴의 options 개수는 요청 메뉴의 옵션 개수와 동일하다") {
                 resultOptions shouldHaveSize requestOptions.size
             }
-            /*it("응답 메뉴의 options 값은 요청 메뉴의 옵션 값과 동일하다") {
+            it("응답 메뉴의 options 값은 요청 메뉴의 옵션 값과 동일하다") {
                 for ((idx, resultOption) in resultOptions.withIndex()) {
                     val requestOption = requestOptions[idx]
-                    resultOption shouldBe requestOption
+                    resultOption.price shouldBe requestOption.price.getIntValue()
+                    resultOption.name shouldBe requestOption.name
+                    resultOption.quantity shouldBe requestOption.quantity
                 }
-            }*/
+            }
         }
     }
 
@@ -83,24 +83,24 @@ class OrderServiceIntegrationTest(
 fun request(): OrderCreateRequest {
     return OrderCreateRequest(
         1,
-        BigDecimal(2000),
+        2000,
         true,
         1,
         "가게1",
         1,
         listOf(
-            OrderMenuCreateRequest(1, "메뉴1", BigDecimal(1000), 1,
-                totalAmount = BigDecimal(1500),
+            OrderMenuCreateRequest(1, "메뉴1", 1000, 1,
+                totalAmount = 1500,
                 options = listOf(
-                    Option("HOT", BigDecimal(0), 1),
-                    Option("시럽", BigDecimal(500), 1)
+                    Option("HOT", Money(0), 1),
+                    Option("시럽", Money(500), 1)
                 )
             ),
-            OrderMenuCreateRequest(2, "메뉴2", BigDecimal(1000), 1,
-                totalAmount = BigDecimal(1500),
+            OrderMenuCreateRequest(2, "메뉴2", 1000, 1,
+                totalAmount = 1500,
                 options = listOf(
-                    Option("HOT", BigDecimal(0), 1),
-                    Option("시럽", BigDecimal(500), 1),
+                    Option("HOT", Money(0), 1),
+                    Option("시럽", Money(500), 1),
                 )
             ),
         )
