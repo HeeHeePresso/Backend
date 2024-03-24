@@ -14,7 +14,7 @@ class OrderMenu (
     options: List<Option>
 ) : BaseEntity() {
     fun getTotalAmount(): BigDecimal {
-        TODO("Not yet implemented")
+        return menuInfo.price + options.sumOf { it.price.multiply(BigDecimal(it.quantity)) }
     }
 
     @Id
