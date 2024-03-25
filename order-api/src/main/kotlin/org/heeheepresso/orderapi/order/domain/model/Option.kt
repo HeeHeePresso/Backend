@@ -13,4 +13,8 @@ data class Option(
     @AttributeOverride(name = "value", column = Column(name = "price"))
     val price: Money,
     val quantity: Int,
-) : BaseEntity()
+) : BaseEntity() {
+
+    constructor(name: String, price: Int, quantity: Int): this(name, Money(price), quantity)
+
+}

@@ -1,7 +1,5 @@
 package org.heeheepresso.orderapi.order.dto.request
 
-import org.heeheepresso.orderapi.order.domain.model.Money
-import org.heeheepresso.orderapi.order.domain.model.Option
 import org.heeheepresso.orderapi.order.domain.model.OrderMenu
 
 data class OrderMenuCreateRequest(
@@ -9,9 +7,7 @@ data class OrderMenuCreateRequest(
     val menuName: String,
     val price: Int,
     val quantity: Int,
-    //TODO('option 받는 Request 방식 고민하고 변경')
-    val options: List<Option>,
-    //TODO 이 값을 받을 것인지 논의 필요(프론트 or 메뉴쪽에서 계산??)
+    val options: List<OptionCreateRequest>,
     val totalAmount: Int,
 ) {
 
@@ -20,9 +16,10 @@ data class OrderMenuCreateRequest(
         return OrderMenu(
             menuId = menuId,
             menuName = menuName,
-            price = Money(price),
+            price = price,
             quantity = quantity,
-            options = options,
+            options = options.map(OptionCreateRequest::toOptionVO),
+            totalAmount = totalAmount,
         )
     }
 }

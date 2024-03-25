@@ -32,7 +32,6 @@ class Order(
         cascade = [CascadeType.PERSIST, CascadeType.REMOVE],
         orphanRemoval = true)
     @JoinColumn(name = "order_id")
-    @OrderColumn(name = "list_idx")
     val orderMenuList: List<OrderMenu> = orderMenuList
 
     @Enumerated(EnumType.STRING)

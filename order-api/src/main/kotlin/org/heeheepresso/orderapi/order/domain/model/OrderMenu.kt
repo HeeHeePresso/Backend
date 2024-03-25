@@ -8,9 +8,10 @@ import org.heeheepresso.orderapi.common.BaseEntity
 class OrderMenu (
     menuId: Long,
     menuName: String,
-    price: Money,
+    price: Int,
     quantity: Int,
-    options: List<Option>
+    options: List<Option>,
+    totalAmount: Int
 ) : BaseEntity() {
     fun getTotalAmount(): Int {
         return menuInfo.price.getIntValue() + options.sumOf { it.price.getIntValue() * it.quantity }
@@ -31,4 +32,8 @@ class OrderMenu (
         joinColumns = [JoinColumn(name = "order_menu_id")]
     )
     val options = options
+
+    @Embedded
+    @AttributeOverride(name = "value", column = Column(name = "totalPrice"))
+    val totalAmount = Money(totalAmount)
 }
