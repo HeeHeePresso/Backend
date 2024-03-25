@@ -2,17 +2,17 @@ package org.heeheepresso.orderapi.order.domain.model
 
 import jakarta.persistence.*
 import org.heeheepresso.orderapi.common.BaseEntity
-import java.math.BigDecimal
 
 @Table(name = "orders")
 @Entity
 class Order(
     userId: Long,
     storeId: Long,
+    storeName: String,
     paymentId: Long,
-    amount: BigDecimal,
+    amount: Int,
     packagedYn: Boolean,
-    orderMenuList: List<OrderMenu>
+    orderMenuList: Set<OrderMenu>
 ) : BaseEntity() {
 
     @Id
@@ -23,18 +23,28 @@ class Order(
     val buyer: Buyer = Buyer(userId)
 
     @Embedded
-    val store = Store(storeId)
+    val store = Store(storeId, storeName)
 
     @Embedded
-    var paymentInfo = PaymentInfo(paymentId, amount)
+    var paymentInfo = PaymentInfo(paymentId, Money(amount))
+
+    @OneToMany(
+        cascade = [CascadeType.PERSIST, CascadeType.REMOVE],
+        orphanRemoval = true)
+    @JoinColumn(name = "order_id")
+    val orderMenuList: Set<OrderMenu> = orderMenuList
 
     @Enumerated(EnumType.STRING)
     var status = OrderStatus.REQUESTED
 
     var packagedYn = packagedYn
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "order_menu", joinColumns = [JoinColumn(name = "order_id")])
-    val orderMenuList: List<OrderMenu> = orderMenuList
+    fun modifyStatus(nextStatus: OrderStatus) {
+        status.checkCanChangeable(nextStatus)
+        status = nextStatus
+    }
 
+    fun getTotalAmount(): Money {
+        return paymentInfo.amount
+    }
 }
