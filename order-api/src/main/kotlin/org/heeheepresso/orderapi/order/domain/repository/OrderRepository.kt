@@ -13,6 +13,7 @@ interface OrderRepository : JpaRepository<Order, Long> {
         JOIN FETCH o.orderMenuList om
         LEFT JOIN FETCH om.options
         WHERE o.id = :id
+        ORDER BY om.id ASC
     """)
     fun findByIdJoinAllMenu(id: Long): Order?
 

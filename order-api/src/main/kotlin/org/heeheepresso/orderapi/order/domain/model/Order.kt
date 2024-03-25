@@ -12,7 +12,7 @@ class Order(
     paymentId: Long,
     amount: Int,
     packagedYn: Boolean,
-    orderMenuList: List<OrderMenu>
+    orderMenuList: Set<OrderMenu>
 ) : BaseEntity() {
 
     @Id
@@ -32,7 +32,7 @@ class Order(
         cascade = [CascadeType.PERSIST, CascadeType.REMOVE],
         orphanRemoval = true)
     @JoinColumn(name = "order_id")
-    val orderMenuList: List<OrderMenu> = orderMenuList
+    val orderMenuList: Set<OrderMenu> = orderMenuList
 
     @Enumerated(EnumType.STRING)
     var status = OrderStatus.REQUESTED

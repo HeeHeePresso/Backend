@@ -19,7 +19,7 @@ data class OrderCreateRequest(
             paymentId = paymentId,
             amount = amount,
             packagedYn = packagedYn,
-            orderMenuList = orderMenuList.map(OrderMenuCreateRequest::toOrderMenu)
+            orderMenuList = orderMenuList.map(OrderMenuCreateRequest::toOrderMenu).toSet()
         )
     }
 }
