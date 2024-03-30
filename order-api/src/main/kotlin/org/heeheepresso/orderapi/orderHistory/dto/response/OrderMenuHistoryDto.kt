@@ -1,4 +1,4 @@
-package org.heeheepresso.orderapi.orderHistory.menu.dto
+package org.heeheepresso.orderapi.orderHistory.dto.response
 
 import java.math.BigDecimal
 

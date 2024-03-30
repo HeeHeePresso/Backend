@@ -1,5 +1,9 @@
-package org.heeheepresso.orderapi.orderHistory
+package org.heeheepresso.orderapi.orderHistory.aplication
 
+import org.heeheepresso.orderapi.common.ApiException
+import org.heeheepresso.orderapi.common.ApiStatus
+import org.heeheepresso.orderapi.orderHistory.domain.model.OrderHistory
+import org.heeheepresso.orderapi.orderHistory.domain.repository.OrderHistoryRepository
 import org.heeheepresso.orderapi.orderHistory.dto.request.OrderHistoryCreateRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,8 +25,7 @@ class OrderHistoryService(
         orderHistoryRepository.save(OrderHistory.of(request))
 
     fun getOrderHistoryById(id: Long): OrderHistory {
-        // TODO: Exception 정리 필요 
-        return orderHistoryRepository.findDetailById(id) ?: throw Exception()
+        return orderHistoryRepository.findDetailById(id) ?: throw ApiException(ApiStatus.NOT_EXISTS_ORDER_HISTORY)
     }
 
 }
