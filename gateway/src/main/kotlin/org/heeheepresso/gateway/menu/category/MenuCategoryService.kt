@@ -4,10 +4,10 @@ import com.google.common.collect.ImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.heeheepresso.gateway.common.Context
+import org.heeheepresso.gateway.common.extension.getMenuCategory
 import org.heeheepresso.gateway.menu.category.dto.MenuCategoryList
 import org.heeheepresso.gateway.menu.category.dto.RecommendedCarousel
 import org.heeheepresso.gateway.menu.category.dto.RecommendedPageResponse
-import org.heeheepresso.gateway.menu.menuDetail.MenuDetailService
 import org.heeheepresso.gateway.menu.moreinfo.MoreInfo
 import org.heeheepresso.gateway.recommendation.RecommendationHandler
 import org.heeheepresso.gateway.recommendation.RecommendationHandler.*
@@ -71,7 +71,7 @@ class MenuCategoryService(
     ): Context {
         return coroutineScope {
             val storeId = async { userService.getStore(userId) }
-            val menuCategory = if (category != null) MenuCategory.valueOf(category) else null
+            val menuCategory = category?.getMenuCategory()
             Context(
                 userId = userId,
                 storeId = storeId.await(),
