@@ -3,10 +3,12 @@ package org.heeheepresso.orderapi.orderHistory
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.date.shouldBeAfter
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.heeheepresso.orderapi.order.domain.model.OrderStatus
 import org.heeheepresso.orderapi.orderHistory.aplication.OrderHistoryService
 import org.heeheepresso.orderapi.orderHistory.dto.request.OrderHistoryCreateRequest
 import org.heeheepresso.orderapi.orderHistory.dto.request.OrderMenuHistoryCreateRequest
+import org.heeheepresso.orderapi.orderHistory.dto.request.OrderMenuOptionHistoryCreateRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.math.BigDecimal
@@ -30,9 +32,25 @@ class OrderHistoryServiceTest @Autowired constructor(
                 orderMenuHistoryList = emptyList(),
             )
 
+            val orderMenuOptionHistory = listOf(
+                OrderMenuOptionHistoryCreateRequest(option = "샷추가", price = BigDecimal(500), quantity = 2),
+                OrderMenuOptionHistoryCreateRequest(option = "딸기시럽", price = BigDecimal(100), quantity = 2),
+                OrderMenuOptionHistoryCreateRequest(option = "휘핑크림없이", price = BigDecimal(0), quantity = 1),
+            )
+
             val orderMenuHistory = listOf(
-                OrderMenuHistoryCreateRequest(menuId = 1, price = BigDecimal.ZERO, quantity = 1),
-                OrderMenuHistoryCreateRequest(menuId = 2, price = BigDecimal.ZERO, quantity = 2)
+                OrderMenuHistoryCreateRequest(
+                    menuId = 1,
+                    price = BigDecimal.ZERO,
+                    quantity = 1,
+                    orderMenuOptionHistoryCreateRequest = orderMenuOptionHistory
+                ),
+                OrderMenuHistoryCreateRequest(
+                    menuId = 2,
+                    price = BigDecimal.ZERO,
+                    quantity = 2,
+                    orderMenuOptionHistoryCreateRequest = orderMenuOptionHistory
+                ),
             )
 
             val requestWithMenu = OrderHistoryCreateRequest(
@@ -105,10 +123,13 @@ class OrderHistoryServiceTest @Autowired constructor(
                     orderHistory.storedId shouldBe requestWithMenu.storedId
                     orderHistory.paymentId shouldBe requestWithMenu.paymentId
                     orderHistory.orderMenuHistoryList?.size shouldBe requestWithMenu.orderMenuHistoryList.size
-                    orderHistory.orderMenuHistoryList?.forEachIndexed { index, orderMenuHistory ->
-                        orderMenuHistory.menuId shouldBe requestWithMenu.orderMenuHistoryList[index].menuId
-                        orderMenuHistory.price.compareTo(requestWithMenu.orderMenuHistoryList[index].price) shouldBe 0
-                        orderMenuHistory.quantity shouldBe requestWithMenu.orderMenuHistoryList[index].quantity
+                    orderHistory.orderMenuHistoryList?.forEach { orderMenuHistory ->
+                        val data = requestWithMenu.orderMenuHistoryList.find { it.menuId == orderMenuHistory.menuId }
+                        data shouldNotBe null
+                        orderMenuHistory.menuId shouldBe data?.menuId
+                        orderMenuHistory.price.compareTo(data?.price) shouldBe 0
+                        orderMenuHistory.quantity shouldBe data?.quantity
+                        orderMenuHistory.orderMenuOptionHistoryList?.size shouldBe data?.orderMenuOptionHistoryCreateRequest?.size
                     }
                     result.createdBy shouldBe "system"
                     result.createdDate shouldBeAfter now
