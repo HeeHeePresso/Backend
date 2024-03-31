@@ -12,6 +12,7 @@ class OrderMenuHistory(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
+    var name: String,
     var menuId: Long,
     var price: BigDecimal,
     var quantity: Int,
@@ -26,6 +27,7 @@ class OrderMenuHistory(
         fun of(orderHistory: OrderHistory, request: OrderMenuHistoryCreateRequest): OrderMenuHistory {
             val orderMenuHistory = OrderMenuHistory(
                 menuId = request.menuId,
+                name = request.name,
                 price = request.price,
                 quantity = request.quantity,
                 orderHistory = orderHistory,
