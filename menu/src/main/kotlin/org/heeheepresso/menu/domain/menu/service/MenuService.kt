@@ -2,16 +2,15 @@ package org.heeheepresso.menu.domain.menu.service
 
 import org.heeheepresso.menu.domain.menu.model.Menu
 import org.heeheepresso.menu.domain.menu.repository.MenuRepository
-import org.heeheepresso.menu.interfaces.dto.ModifyMenuRequest
 import org.heeheepresso.menu.interfaces.dto.ModifyStatusRequest
 import org.springframework.stereotype.Service
 
 @Service
-class MenuService (
-    val menuRepository: MenuRepository
-        ){
+class MenuService(
+        val menuRepository: MenuRepository
+) {
 
-    fun save(input: Menu): Menu{
+    fun save(input: Menu): Menu {
         return menuRepository.save(input)
     }
 
@@ -23,10 +22,14 @@ class MenuService (
         return menuRepository.findAll()
     }
 
-    fun modifyStatus(id: Long, request: ModifyStatusRequest): Menu{
+    fun modifyStatus(id: Long, request: ModifyStatusRequest): Menu {
         val menu: Menu = menuRepository.findById(id).orElseThrow()
         menu.modifyStatus(request.status)
         return menu
+    }
+
+    fun findAllByIds(ids: List<Long>): List<Menu> {
+        return menuRepository.findAllById(ids).toList()
     }
 
 }
