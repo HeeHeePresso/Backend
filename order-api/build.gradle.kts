@@ -52,6 +52,7 @@ dependencies {
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     implementation("io.kotest:kotest-extensions-spring:$kotestVersion")
+    testImplementation("io.mockk:mockk:1.13.4")
 
     // QueryDSL
     implementation ("com.querydsl:querydsl-jpa:5.0.0:jakarta")
@@ -60,7 +61,10 @@ dependencies {
     kapt ("jakarta.persistence:jakarta.persistence-api")
 
     // grpc
-    implementation("io.github.lognet:grpc-spring-boot-starter:$grpcSpringBootStarterVersion")
+    implementation("net.devh:grpc-server-spring-boot-starter:2.12.0.RELEASE")
+
+    // logging
+    implementation("io.github.oshai:kotlin-logging-jvm:5.1.1")
 
 }
 
