@@ -11,12 +11,8 @@ class MenuController(
 ) {
 
     @GetMapping("/menus")
-    fun getAllMenus(@RequestParam(required = false) id: List<Long>?): Iterable<Menu> {
-        return if (id == null)
-            menuService.findAll()
-        else {
-            menuService.findAllByIds(id)
-        }
+    fun getMenus(@RequestParam(required = false) id: List<Long>?): Iterable<Menu> {
+        return menuService.findMenus(id)
     }
 
     @GetMapping("/menus/{menuId}")

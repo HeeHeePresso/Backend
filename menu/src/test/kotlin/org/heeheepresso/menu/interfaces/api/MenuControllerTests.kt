@@ -22,7 +22,7 @@ class MenuControllerTests(
 
     Given("getMenusByMenuIds 테스트") {
         BDDMockito
-                .given(menuService.findAllByIds(listOf(1L)))
+                .given(menuService.findMenus(listOf(1L)))
                 .willReturn(listOf(
                         Menu(
                                 menuId = 1L,
@@ -43,7 +43,7 @@ class MenuControllerTests(
                                 ),
                         )))
         BDDMockito
-                .given(menuService.findAllByIds(listOf(1L, 2L)))
+                .given(menuService.findMenus(listOf(1L, 2L)))
                 .willReturn(listOf(
                         Menu(
                                 menuId = 1L,

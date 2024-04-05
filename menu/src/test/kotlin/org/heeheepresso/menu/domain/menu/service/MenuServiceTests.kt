@@ -15,7 +15,7 @@ class MenuServiceTests(
 
     Given("메뉴 서비스를 테스트") {
         When("메뉴에 아무것도 없을 때") {
-            val result = menuService.findAll()
+            val result = menuService.findMenus(null)
 
             Then("메뉴 리스트 전체 조회") {
                 result.shouldHaveSize(0)
@@ -122,7 +122,7 @@ class MenuServiceTests(
             )
             menuService.save(input)
 
-            val result = menuService.findAll()
+            val result = menuService.findMenus(null)
 
             Then("메뉴 리스트 전체 조회") {
                 result.shouldHaveSize(3)
@@ -206,29 +206,30 @@ class MenuServiceTests(
 
         menus.forEach { menu -> menuService.save(menu) }
 
-        val registeredMenus = menuService.findAll()
+        val registeredMenus = menuService.findMenus(null)
         val menuIds = registeredMenus.map { menu -> menu.menuId!! }.toList()
 
         When("등록된 2건을 요청한 경우") {
-            val result: List<Menu> = menuService.findAllByIds(menuIds)
+            val params = listOf(menuIds[0], menuIds[1])
+            val result: Iterable<Menu> = menuService.findMenus(params)
             Then("2건을 반환함") {
-                result.size shouldBe 2
+                result.count() shouldBe 2
             }
         }
 
         When("등록된 1건과 미등록된 1건을 요청한 경우") {
             val params = listOf(menuIds[0], 9999L)
-            val result: List<Menu> = menuService.findAllByIds(params)
+            val result: Iterable<Menu> = menuService.findMenus(params)
             Then("1건을 반환함") {
-                result.size shouldBe 1
+                result.count() shouldBe 1
             }
         }
 
         When("미등록된 2건을 요청한 경우") {
             val params = listOf(9998L, 9999L)
-            val result: List<Menu> = menuService.findAllByIds(params)
+            val result: Iterable<Menu> = menuService.findMenus(params)
             Then("0건을 반환함") {
-                result.size shouldBe 0
+                result.count() shouldBe 0
             }
         }
     }

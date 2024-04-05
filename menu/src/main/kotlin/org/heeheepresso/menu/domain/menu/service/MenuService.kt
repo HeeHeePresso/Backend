@@ -18,8 +18,12 @@ class MenuService(
         return menuRepository.findById(id).orElseThrow()
     }
 
-    fun findAll(): Iterable<Menu> {
-        return menuRepository.findAll()
+    fun findMenus(id: List<Long>?): Iterable<Menu> {
+        return if (id == null)
+            menuRepository.findAll()
+        else {
+            menuRepository.findAllById(id)
+        }
     }
 
     fun modifyStatus(id: Long, request: ModifyStatusRequest): Menu {
@@ -27,9 +31,4 @@ class MenuService(
         menu.modifyStatus(request.status)
         return menu
     }
-
-    fun findAllByIds(ids: List<Long>): List<Menu> {
-        return menuRepository.findAllById(ids).toList()
-    }
-
 }
