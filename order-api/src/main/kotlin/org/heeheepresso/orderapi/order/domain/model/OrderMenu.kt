@@ -13,8 +13,12 @@ class OrderMenu (
     options: List<Option>,
     totalAmount: Int
 ) : BaseEntity() {
-    fun getTotalAmount(): Int {
-        return menuInfo.price.getIntValue() + options.sumOf { it.price.getIntValue() * it.quantity }
+
+    init {
+        val totalValue = price + options.sumOf { it.price.getIntValue() * it.quantity }
+        if (totalValue != totalAmount) {
+            throw RuntimeException()
+        }
     }
 
     @Id
@@ -36,4 +40,5 @@ class OrderMenu (
     @Embedded
     @AttributeOverride(name = "value", column = Column(name = "totalPrice"))
     val totalAmount = Money(totalAmount)
+
 }

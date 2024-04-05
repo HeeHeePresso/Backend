@@ -16,7 +16,7 @@ data class OrderMenuResponse(
                 options = orderMenu.options.map {
                     OrderMenuOptionResponse.from(it)
                 },
-                totalAmount = orderMenu.getTotalAmount()
+                totalAmount = orderMenu.totalAmount.getIntValue()
             )
         }
     }

@@ -11,7 +11,12 @@ enum class OrderStatus(
     COMPLETED("픽업완료"),
     CANCELLED("취소"),;
 
-
+    fun checkCanChangeable(nextStatus: OrderStatus) {
+        if (!canChangeable(nextStatus)) {
+            //TODO('공통 Exception으로 변경')
+            throw RuntimeException()
+        }
+    }
 
     private fun canChangeable(nextStatus: OrderStatus): Boolean {
         if (this == nextStatus) {
@@ -23,13 +28,6 @@ enum class OrderStatus(
             CONFIRMED -> nextStatus == WAITING
             WAITING -> nextStatus == CONFIRMED
             COMPLETED, CANCELLED -> false
-        }
-    }
-
-    fun checkCanChangeable(nextStatus: OrderStatus) {
-        if (!canChangeable(nextStatus)) {
-            //TODO('공통 Exception으로 변경')
-            throw RuntimeException()
         }
     }
 }
