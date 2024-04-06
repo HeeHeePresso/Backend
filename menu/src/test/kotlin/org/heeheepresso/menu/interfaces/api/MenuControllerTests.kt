@@ -99,7 +99,9 @@ class MenuControllerTests(
                                         .param("id", "1")
                         )
                         .andExpect(MockMvcResultMatchers.status().isOk())
-                        .andExpect(MockMvcResultMatchers.jsonPath("$[0].menuId").value("1"))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.resultCode").value(0))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.resultMessage").value("성공"))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value("1"))
             }
         }
 
@@ -112,8 +114,10 @@ class MenuControllerTests(
                                         .param("id", "2")
                         )
                         .andExpect(MockMvcResultMatchers.status().isOk())
-                        .andExpect(MockMvcResultMatchers.jsonPath("$[0].menuId").value("1"))
-                        .andExpect(MockMvcResultMatchers.jsonPath("$[1].menuId").value("2"))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.resultCode").value(0))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.resultMessage").value("성공"))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].id").value("1"))
+                        .andExpect(MockMvcResultMatchers.jsonPath("$.data[1].id").value("2"))
             }
         }
     }
