@@ -44,6 +44,10 @@ dependencies {
     runtimeOnly("com.mysql:mysql-connector-j")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+    // test container
+    testImplementation("org.testcontainers:junit-jupiter:1.16.3")
+    testImplementation("org.testcontainers:mysql:1.16.3")
+
     // mapstruct
     implementation("org.mapstruct:mapstruct:1.5.2.Final")
     kapt("org.mapstruct:mapstruct-processor:1.5.2.Final")
@@ -79,4 +83,14 @@ tasks.withType<KotlinCompile> {
 
 val test by tasks.getting(Test::class) {
     useJUnitPlatform { }
+}
+
+val testContainerVersion by extra {
+    "1.15.1"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.testcontainers:testcontainers-bom:$testContainerVersion")
+    }
 }

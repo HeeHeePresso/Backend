@@ -1,11 +1,15 @@
 package org.heeheepresso.orderapi.orderHistory
 
+import io.github.oshai.kotlinlogging.KotlinLogging
+import io.kotest.core.spec.Spec
 import io.kotest.core.spec.style.BehaviorSpec
-import io.kotest.matchers.date.shouldBeAfter
+import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.longs.shouldBeGreaterThan
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.heeheepresso.orderapi.common.BaseEntity
+import org.heeheepresso.orderapi.common.DataSourceConfig
+import org.heeheepresso.orderapi.common.TestMySQLContainer
 import org.heeheepresso.orderapi.order.domain.model.OrderStatus
 import org.heeheepresso.orderapi.orderHistory.aplication.OrderHistoryService
 import org.heeheepresso.orderapi.orderHistory.domain.model.OrderMenuHistory
@@ -14,14 +18,42 @@ import org.heeheepresso.orderapi.orderHistory.dto.request.OrderHistoryCreateRequ
 import org.heeheepresso.orderapi.orderHistory.dto.request.OrderMenuHistoryCreateRequest
 import org.heeheepresso.orderapi.orderHistory.dto.request.OrderMenuOptionHistoryCreateRequest
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
+import org.springframework.core.io.ClassPathResource
+import org.springframework.jdbc.datasource.init.ScriptUtils
+import org.springframework.test.context.ActiveProfiles
 import java.math.BigDecimal
+import java.sql.SQLException
 import java.time.LocalDateTime
+import javax.sql.DataSource
+
+private val logger = KotlinLogging.logger {}
 
 @SpringBootTest
+@ActiveProfiles("test")
+@Import(TestMySQLContainer::class, DataSourceConfig::class)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class OrderHistoryServiceTest @Autowired constructor(
-    private val orderHistoryService: OrderHistoryService
+    private val orderHistoryService: OrderHistoryService,
+    private val dataSource: DataSource
 ) : BehaviorSpec() {
+
+    override fun beforeSpec(spec: Spec) {
+        try {
+            dataSource.connection.use { conn ->
+                ScriptUtils.executeSqlScript(
+                    conn,
+                    ClassPathResource("/sql/order.sql")
+                )
+                logger.info { "order sql run" }
+            }
+        } catch (e: SQLException) {
+            throw RuntimeException(e)
+        }
+    }
+
 
     init {
         Given("주문 히스토리 서비스 테스트") {
@@ -31,7 +63,7 @@ class OrderHistoryServiceTest @Autowired constructor(
                 price = BigDecimal.ZERO,
                 status = OrderStatus.WAITING,
                 packagedYn = false,
-                storedId = 1,
+                storeId = 1,
                 paymentId = 1,
                 orderMenuHistoryList = emptyList(),
             )
@@ -82,7 +114,7 @@ class OrderHistoryServiceTest @Autowired constructor(
                 price = BigDecimal.ZERO,
                 status = OrderStatus.WAITING,
                 packagedYn = false,
-                storedId = 1,
+                storeId = 1,
                 paymentId = 1,
                 orderMenuHistoryList = orderMenuHistory,
             )
@@ -93,23 +125,25 @@ class OrderHistoryServiceTest @Autowired constructor(
                 price = BigDecimal.ZERO,
                 status = OrderStatus.WAITING,
                 packagedYn = false,
-                storedId = 1,
+                storeId = 1,
                 paymentId = 1,
                 orderMenuHistoryList = orderMenuWithoutOptionHistory,
             )
 
+            val now = LocalDateTime.now().withNano(0)
+
             // TODO 메뉴 없이 주문 히스토리 저장 요청이 오면 validation?
             When("주문 히스토리를 저장하면 (메뉴 없이)") {
-                val now = LocalDateTime.now()
                 val result = orderHistoryService.createOrderHistory(requestWithoutMenu)
 
                 Then("저장한 주문 히스토리 그대로를 반환하고 주문 메뉴 리스트는 null 반환") {
+                    (result.id ?: 0).shouldBeGreaterThan(0L)
                     result.orderId shouldBe requestWithoutMenu.orderId
                     result.userId shouldBe requestWithoutMenu.userId
                     result.price shouldBe requestWithoutMenu.price
                     result.status shouldBe requestWithoutMenu.status
                     result.packagedYn shouldBe requestWithoutMenu.packagedYn
-                    result.storedId shouldBe requestWithoutMenu.storedId
+                    result.storeId shouldBe requestWithoutMenu.storeId
                     result.paymentId shouldBe requestWithoutMenu.paymentId
                     result.orderMenuHistoryList?.size shouldBe 0
                     validateBaseEntity(result, now)
@@ -117,16 +151,16 @@ class OrderHistoryServiceTest @Autowired constructor(
             }
 
             When("주문 메뉴와 함께 히스토리를 저장하면") {
-                val now = LocalDateTime.now()
                 val result = orderHistoryService.createOrderHistory(requestWithMenu)
 
                 Then("저장한 주문 및 주문 메뉴 히스토리 그대로 반환") {
+                    (result.id ?: 0).shouldBeGreaterThan(0L)
                     result.orderId shouldBe requestWithMenu.orderId
                     result.userId shouldBe requestWithMenu.userId
                     result.price shouldBe requestWithMenu.price
                     result.status shouldBe requestWithMenu.status
                     result.packagedYn shouldBe requestWithMenu.packagedYn
-                    result.storedId shouldBe requestWithMenu.storedId
+                    result.storeId shouldBe requestWithMenu.storeId
                     result.paymentId shouldBe requestWithMenu.paymentId
                     validateBaseEntity(result, now)
 
@@ -148,7 +182,6 @@ class OrderHistoryServiceTest @Autowired constructor(
 
             // TODO 옵션 없이 저장이 가능한가..? 기본 옵션을 줄지? 옵션이 없다면 알아서 무옵션으로?
             When("주문 메뉴와 함께(옵션 없이) 히스토리를 저장하면") {
-                val now = LocalDateTime.now()
                 val result = orderHistoryService.createOrderHistory(requestWithMenuWithoutOption)
 
                 Then("저장한 주문 및 주문 메뉴 히스토리 그대로 반환") {
@@ -157,13 +190,14 @@ class OrderHistoryServiceTest @Autowired constructor(
                     result.price shouldBe requestWithMenuWithoutOption.price
                     result.status shouldBe requestWithMenuWithoutOption.status
                     result.packagedYn shouldBe requestWithMenuWithoutOption.packagedYn
-                    result.storedId shouldBe requestWithMenuWithoutOption.storedId
+                    result.storeId shouldBe requestWithMenuWithoutOption.storeId
                     result.paymentId shouldBe requestWithMenuWithoutOption.paymentId
                     validateBaseEntity(result, now)
 
                     result.orderMenuHistoryList?.size shouldBe requestWithMenuWithoutOption.orderMenuHistoryList.size
                     result.orderMenuHistoryList?.forEach { orderMenuHistory ->
-                        val menuReq = requestWithMenuWithoutOption.orderMenuHistoryList.find { it.menuId == orderMenuHistory.menuId }
+                        val menuReq =
+                            requestWithMenuWithoutOption.orderMenuHistoryList.find { it.menuId == orderMenuHistory.menuId }
                         validateMenu(orderMenuHistory, menuReq, now)
 
                         orderMenuHistory.orderMenuOptionHistoryList?.size shouldBe 0
@@ -172,7 +206,6 @@ class OrderHistoryServiceTest @Autowired constructor(
             }
 
             When("주문 히스토리를 ID로 조회하면 (querydsl 테스트)") {
-                val now = LocalDateTime.now()
                 val result = orderHistoryService.createOrderHistory(requestWithMenu)
                 val orderHistory = orderHistoryService.getOrderHistoryById(result.id!!)
 
@@ -182,7 +215,7 @@ class OrderHistoryServiceTest @Autowired constructor(
                     orderHistory.price.compareTo(requestWithMenu.price) shouldBe 0
                     orderHistory.status shouldBe requestWithMenu.status
                     orderHistory.packagedYn shouldBe requestWithMenu.packagedYn
-                    orderHistory.storedId shouldBe requestWithMenu.storedId
+                    orderHistory.storeId shouldBe requestWithMenu.storeId
                     orderHistory.paymentId shouldBe requestWithMenu.paymentId
                     validateBaseEntity(result, now)
 
@@ -210,6 +243,7 @@ class OrderHistoryServiceTest @Autowired constructor(
         now: LocalDateTime
     ) {
         optionReq shouldNotBe null
+        (option.id ?: 0).shouldBeGreaterThan(0L)
         option.optionId shouldBe optionReq?.optionId
         option.name shouldBe optionReq?.name
         option.price.compareTo(optionReq?.price) shouldBe 0
@@ -236,9 +270,9 @@ class OrderHistoryServiceTest @Autowired constructor(
     ) {
         // TODO 추후에 createdBy 실제 요청자로 검증
         baseEntity.createdBy shouldBe "system"
-        baseEntity.createdDate shouldBeAfter now
+        baseEntity.createdDate shouldBeGreaterThanOrEqualTo now
         baseEntity.modifiedBy shouldBe "system"
-        baseEntity.modifiedDate shouldBeAfter now
+        baseEntity.modifiedDate shouldBeGreaterThanOrEqualTo now
     }
 }
 
