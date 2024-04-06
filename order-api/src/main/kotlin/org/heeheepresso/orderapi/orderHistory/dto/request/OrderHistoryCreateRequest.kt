@@ -9,7 +9,7 @@ data class OrderHistoryCreateRequest(
     val price: BigDecimal,
     val status: OrderStatus,
     val packagedYn: Boolean,
-    val storedId: Long,
+    val storeId: Long,
     val paymentId: Long,
     val orderMenuHistoryList: List<OrderMenuHistoryCreateRequest>,
 )

@@ -19,7 +19,7 @@ class OrderHistory(
     @Enumerated(value = EnumType.STRING)
     var status: OrderStatus,
     var packagedYn: Boolean,
-    var storedId: Long,
+    var storeId: Long,
     var paymentId: Long,
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "orderHistory", cascade = [CascadeType.ALL], orphanRemoval = true)
     var orderMenuHistoryList: MutableSet<OrderMenuHistory>? = mutableSetOf(),
@@ -32,7 +32,7 @@ class OrderHistory(
                 price = price,
                 status = status,
                 packagedYn = packagedYn,
-                storedId = storedId,
+                storeId = storeId,
                 paymentId = paymentId,
             )
             orderHistory.addAllOrderMenuHistory(orderMenuHistoryList)
