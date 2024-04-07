@@ -4,4 +4,5 @@ enum class FlagType {
     NEW,
     BEST,
     SALE,
+    NONE
 }
