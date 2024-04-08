@@ -1,6 +1,6 @@
 package org.heeheepresso.menu.interfaces.api
 
-import org.heeheepresso.menu.common.ApiListResponse
+import org.heeheepresso.menu.common.ApiResponse
 import org.heeheepresso.menu.common.ApiStatus
 import org.heeheepresso.menu.domain.menu.model.Menu
 import org.heeheepresso.menu.domain.menu.service.MenuService
@@ -14,9 +14,9 @@ class MenuController(
 ) {
 
     @GetMapping("/menus")
-    fun getMenus(@RequestParam(required = false) id: List<Long>?): ApiListResponse<*> {
+    fun getMenus(@RequestParam(required = false) id: List<Long>?): ApiResponse<Any> {
         val menus: List<GetMenusResponse> = menuService.findMenus(id).map { menu -> GetMenusResponse.from(menu) }
-        return ApiListResponse.of(ApiStatus.SUCCESS, menus)
+        return ApiResponse.of(ApiStatus.SUCCESS, menus)
     }
 
     @GetMapping("/menus/{menuId}")
