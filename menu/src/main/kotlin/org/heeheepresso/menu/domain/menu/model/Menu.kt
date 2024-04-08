@@ -5,7 +5,7 @@ import org.heeheepresso.menu.common.BaseEntity
 import org.heeheepresso.menu.interfaces.dto.ModifyMenuRequest
 
 @Entity
-class Menu (
+class Menu(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val menuId: Long? = null,
@@ -20,7 +20,7 @@ class Menu (
     var category: Category,
 
     @Enumerated(value = EnumType.STRING)
-    var flagType: FlagType? = null,
+    var flagType: FlagType,
 
     @Enumerated(value = EnumType.STRING)
     var status: MenuStatus,
@@ -31,12 +31,12 @@ class Menu (
     @Embedded
     var menuItemPrice: MenuItemPrice,
 
-) : BaseEntity(){
-    fun modifyStatus(status: MenuStatus){
+    ) : BaseEntity() {
+    fun modifyStatus(status: MenuStatus) {
         this.status = status
     }
 
-    fun modifyMenu(request: ModifyMenuRequest){
+    fun modifyMenu(request: ModifyMenuRequest) {
         this.title = request.title
         this.subTitle = request.subTitle
         this.description = request.description
