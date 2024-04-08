@@ -1,14 +1,20 @@
 package org.heeheepresso.gateway.recommendation
 
-import org.heeheepresso.gateway.menu.category.MenuCategory
+import org.heeheepresso.gateway.menu.domain.MenuInfo
 
 data class RecommendedMenu(
-    val menuId: Long,
-    var menuCategory: MenuCategory,
-    var imagePath: String,
-    var title: String,
-    var subTitle: String,
-    var price: Long,
+        val menuId: Long,
 ) {
-    constructor(menuId: Long) : this(1L, MenuCategory.SET_MENU, "", "", "", 0L)
+    fun toMenuInfoFromMap(menuInfoMap: Map<Long, MenuInfo>): MenuInfo {
+        val menuInfo = menuInfoMap[this.menuId]
+        return MenuInfo(
+                menuId = this.menuId,
+                price = menuInfo!!.price,
+                name = menuInfo.name,
+                category = menuInfo.category,
+                imagePath = menuInfo.imagePath,
+                subTitle = menuInfo.subTitle
+        )
+    }
 }
+
