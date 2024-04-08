@@ -30,7 +30,7 @@ class MenuControllerTests(
                                 subTitle = "Sample Menu 01",
                                 description = "Sample Menu for Test",
                                 category = Category.COFFEE,
-                                flagType = null,
+                                flagType = FlagType.NONE,
                                 status = MenuStatus.SELLING,
                                 menuItemDetail = MenuItemDetail(
                                         temperature = Temperature.ICE,
@@ -51,7 +51,7 @@ class MenuControllerTests(
                                 subTitle = "Sample Menu 01",
                                 description = "Sample Menu for Test",
                                 category = Category.COFFEE,
-                                flagType = null,
+                                flagType = FlagType.NONE,
                                 status = MenuStatus.SELLING,
                                 menuItemDetail = MenuItemDetail(
                                         temperature = Temperature.ICE,
@@ -69,7 +69,7 @@ class MenuControllerTests(
                                 subTitle = "Sample Menu 02",
                                 description = "Sample Menu for Test",
                                 category = Category.JUICE_AND_DRINK,
-                                flagType = null,
+                                flagType = FlagType.NONE,
                                 status = MenuStatus.SELLING,
                                 menuItemDetail = MenuItemDetail(
                                         temperature = Temperature.ICE,
