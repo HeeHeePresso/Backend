@@ -7,7 +7,6 @@ import org.heeheepresso.gateway.common.Context
 import org.heeheepresso.gateway.menu.category.dto.MenuCategoryList
 import org.heeheepresso.gateway.menu.category.dto.RecommendedCarousel
 import org.heeheepresso.gateway.menu.category.dto.RecommendedPageResponse
-import org.heeheepresso.gateway.menu.moreinfo.MoreInfo
 import org.heeheepresso.gateway.recommendation.*
 import org.heeheepresso.gateway.recommendation.RecommendationHandler.*
 import org.heeheepresso.gateway.user.UserService
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service
 class MenuCategoryService(
         private val userService: UserService,
         private val recommendationService: RecommendationService,
-        private val moreInfos: List<MoreInfo>
 ) {
 
     companion object {
@@ -33,7 +31,6 @@ class MenuCategoryService(
                             userId = userId,
                             category = null,
                             handlers = RECOMMENDED_PAGE_HANDLERS,
-                            moreInfos = moreInfos,
                     )
             )
             buildRecommendedPageResponse(resultSet)
@@ -53,7 +50,6 @@ class MenuCategoryService(
                             userId = userId,
                             category = category,
                             handlers = ImmutableList.of<RecommendationHandler>(MENU_CATEGORY_HANDLER),
-                            moreInfos = moreInfos,
                     )
             )
             MenuCategoryList(resultSet.getMenuList(MENU_CATEGORY_HANDLER))
@@ -61,7 +57,7 @@ class MenuCategoryService(
     }
 
     suspend fun getContext(
-            userId: Long, category: String?, handlers: List<RecommendationHandler>, moreInfos: List<MoreInfo>?
+            userId: Long, category: String?, handlers: List<RecommendationHandler>?
     ): Context {
         return coroutineScope {
             val storeId = async { userService.getStore(userId) }
@@ -71,7 +67,6 @@ class MenuCategoryService(
                     storeId = storeId.await(),
                     menuCategory = menuCategory,
                     handlers = handlers,
-                    moreInfos = moreInfos,
             )
         }
     }

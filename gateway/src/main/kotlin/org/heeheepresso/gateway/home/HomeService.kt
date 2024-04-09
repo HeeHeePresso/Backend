@@ -14,18 +14,16 @@ class HomeService(
         private val recommendationService: RecommendationService,
         private val menuCategoryService: MenuCategoryService,
         private val eventService: EventService,
-        private val moreInfos: List<MoreInfo>
 ) {
 
-    suspend fun getHomeData(userId: Long, titles: List<String>): HomePageResponse {
+    suspend fun getHomeData(userId: Long): HomePageResponse {
         return coroutineScope {
             val recommendedMenus = async {
                 recommendationService.getRecommendedMenus(
                         menuCategoryService.getContext(
                                 userId = userId,
                                 category = null,
-                                handlers = RecommendationHandler.convertStringsToHandlers(titles),
-                                moreInfos = moreInfos
+                                handlers = null,
                         )
                 )
             }
