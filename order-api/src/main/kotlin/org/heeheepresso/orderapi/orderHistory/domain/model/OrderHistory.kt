@@ -21,8 +21,10 @@ class OrderHistory(
     var packagedYn: Boolean,
     var storeId: Long,
     var paymentId: Long,
+
+    @OrderBy("id")
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "orderHistory", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var orderMenuHistoryList: MutableSet<OrderMenuHistory>? = mutableSetOf(),
+    val orderMenuHistoryList: MutableSet<OrderMenuHistory>? = LinkedHashSet(),
 ) : BaseEntity() {
     companion object {
         fun of(request: OrderHistoryCreateRequest): OrderHistory = with(request) {

@@ -20,8 +20,9 @@ class OrderMenuHistory(
     @JoinColumn(name = "order_history_id")
     var orderHistory: OrderHistory? = null,
 
+    @OrderBy("id")
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "orderMenuHistory", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var orderMenuOptionHistoryList: MutableSet<OrderMenuOptionHistory>? = mutableSetOf(),
+    val orderMenuOptionHistoryList: MutableSet<OrderMenuOptionHistory>? = LinkedHashSet(),
 ) : BaseEntity() {
     companion object {
         fun of(orderHistory: OrderHistory, request: OrderMenuHistoryCreateRequest): OrderMenuHistory {
@@ -37,7 +38,9 @@ class OrderMenuHistory(
             return orderMenuHistory
         }
     }
+
     private fun addAllOrderMenuOptionHistory(orderMenuOptionHistoryList: List<OrderMenuOptionHistoryCreateRequest>) {
-        orderMenuOptionHistoryList.map { OrderMenuOptionHistory.of(this, it) }.let { this.orderMenuOptionHistoryList?.addAll(it) }
+        orderMenuOptionHistoryList.map { OrderMenuOptionHistory.of(this, it) }
+            .let { this.orderMenuOptionHistoryList?.addAll(it) }
     }
 }

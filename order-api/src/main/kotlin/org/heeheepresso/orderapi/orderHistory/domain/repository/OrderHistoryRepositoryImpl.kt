@@ -12,21 +12,10 @@ class OrderHistoryRepositoryImpl(
     private val queryFactory: JPAQueryFactory
 ) : OrderHistoryRepositoryCustom {
 
-    override fun findDetailById(id: Long): OrderHistory? {
-        val orderHistory = queryFactory
-            .selectFrom(orderHistory)
-            .leftJoin(orderHistory.orderMenuHistoryList, orderMenuHistory).fetchJoin()
-            .leftJoin(orderMenuHistory.orderMenuOptionHistoryList, orderMenuOptionHistory).fetchJoin()
-            .where(orderHistory.id.eq(id))
-            .fetchOne()
-
-        orderHistory?.orderMenuHistoryList?.sortedBy { it.id }
-        orderHistory?.orderMenuHistoryList?.forEach { orderMenuHistory ->
-            run {
-                orderMenuHistory.orderMenuOptionHistoryList?.sortedBy { it.id }
-            }
-        }
-
-        return orderHistory;
-    }
+    override fun findDetailById(id: Long): OrderHistory? = queryFactory
+        .selectFrom(orderHistory)
+        .leftJoin(orderHistory.orderMenuHistoryList, orderMenuHistory).fetchJoin()
+        .leftJoin(orderMenuHistory.orderMenuOptionHistoryList, orderMenuOptionHistory).fetchJoin()
+        .where(orderHistory.id.eq(id))
+        .fetchOne()
 }
