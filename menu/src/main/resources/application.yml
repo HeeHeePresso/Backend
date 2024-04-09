@@ -21,3 +21,8 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
         show_sql: true
         format_sql: true
+
+# Springdoc 설정
+springdoc:
+  swagger-ui:
+    path: /api-specification.html
