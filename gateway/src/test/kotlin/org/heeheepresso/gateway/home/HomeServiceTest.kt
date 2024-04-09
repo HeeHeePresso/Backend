@@ -14,9 +14,8 @@ class HomeServiceTest(
 ) : BehaviorSpec({
     Given("홈 화면 API") {
         val userId = 1L
-        val titles = listOf("SEASON_RECOMMENDED")
         When("홈 화면에 대한 데이터를 조회하면") {
-            val result = homeService.getHomeData(userId, titles)
+            val result = homeService.getHomeData(userId)
             Then("여러 서비스로부터 취합한 결과를 반환한다.") {
                 result.eventUrls.size shouldBe 3
                 result.menuInfos[0].menus.size shouldBe 2
