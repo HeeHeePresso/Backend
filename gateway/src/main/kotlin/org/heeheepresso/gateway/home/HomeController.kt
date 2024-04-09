@@ -11,9 +11,8 @@ class HomeController(
 
     @GetMapping("/home")
     suspend fun getHome(
-            @RequestParam("title") titles: List<String>,
             @RequestParam("userId") userId: Long
     ): HomePageResponse {
-        return homeService.getHomeData(userId, titles)
+        return homeService.getHomeData(userId)
     }
 }
