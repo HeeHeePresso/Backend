@@ -21,21 +21,21 @@ class RecommendationService(
         val resultSet: ArrayList<RecommendationResult> = ArrayList()
         val resultMenus = mutableListOf<RecommendedResultMenu>()
         coroutineScope {
-            val handlers = context.handlers ?: listOf(null)
-            resultSet.addAll(handlers.map { handler ->
-                async {
-                    getRecommendedMenu(
-                            RecommendedRequest(
-                                    handler = handler?.name,
-                                    where = context.menuCategory?.let { category -> addCategoryFilter(category) },
-                                    userId = context.userId,
-                                    storeId = context.storeId,
-                                    pageSize = CAROUSEL_PAGE_SIZE,
-                                    offset = 0,
+            resultSet.addAll(context.handlers
+                    .map {
+                        async {
+                            getRecommendedMenu(
+                                    RecommendedRequest(
+                                            handler = it.name,
+                                            where = context.menuCategory?.let { category -> addCategoryFilter(category) },
+                                            userId = context.userId,
+                                            storeId = context.storeId,
+                                            pageSize = CAROUSEL_PAGE_SIZE,
+                                            offset = 0,
+                                    )
                             )
-                    )
-                }.await()
-            })
+                        }.await()
+                    })
             moreInfos.forEach {
                 it.setMoreInfo(resultSet, resultMenus)
             }
@@ -46,7 +46,7 @@ class RecommendationService(
     private suspend fun getRecommendedMenu(request: RecommendedRequest): RecommendationResult {
         return RecommendationResult(
                 recommendedMenus = ImmutableList.of(RecommendedMenu(1), RecommendedMenu(3)),
-                handler = request.handler ?: "SEASON_RECOMMENDED"
+                handler = if (request.handler == "HOME") "SEASON_RECOMMENDED" else request.handler
         )
     }
 }
