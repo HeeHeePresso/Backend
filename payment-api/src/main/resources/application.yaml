@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: ENC(0UgpfgQoakhBzmt8PpjZCdJ7oGf+iqBZZ/902zi1PY1W2nTSgEaGyoLWWmnp+kV6JzqIa2wlanjB39Hv6SIblpUumxjk/I2iarI94l29dwk=)
+    username: ENC(5FJnFgvEJDFMv2M5MaFEsA==)
+    password: ENC(iFUy5Mi5zM2hwUC1A6mnB+25laR+C9lK)
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        show_sql: true
+        format_sql: true
+        default_batch_fetch_size: 1000
+
+logging.level:
+  org.hibernate.type: trace
+
+grpc:
+  port: 9090
