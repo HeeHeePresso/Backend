@@ -1,16 +1,16 @@
 spring:
   datasource:
-    url: 'jdbc:h2:mem:test'
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: ENC(z7LNN4xjy4gsFTWLh1BHhr6866fR99R6Am0NytWV//gGia1AENHGbuzjiEJpIe187kearwgXf4qwP5Tv/T8Jaeidmfxx/JSn20l7BlNFenU=)
+    username: ENC(v1iziHJ0uC7xQEgh1mDzLA==)
+    password: ENC(ar1jGDmV6IWIpyeIkEwZ6XwQKYLGhg0u)
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
         show_sql: true
         format_sql: true
         default_batch_fetch_size: 1000

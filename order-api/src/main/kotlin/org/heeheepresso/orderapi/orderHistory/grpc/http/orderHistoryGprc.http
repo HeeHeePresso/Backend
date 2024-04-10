@@ -1,0 +1,15 @@
+### GRPC SUCCESS
+GRPC localhost:9090/helloworld.Greeter/SayHello
+
+{
+  "name": "test"
+}
+
+
+### GRPC FAIL
+GRPC localhost:9090/helloworld.Greeter/SayHello
+
+{
+  "name": "error"
+}
+
