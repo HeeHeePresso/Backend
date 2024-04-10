@@ -57,7 +57,7 @@ class MenuCategoryService(
     }
 
     suspend fun getContext(
-            userId: Long, category: String?, handlers: List<RecommendationHandler>?
+            userId: Long, category: String?, handlers: List<RecommendationHandler>
     ): Context {
         return coroutineScope {
             val storeId = async { userService.getStore(userId) }

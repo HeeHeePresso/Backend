@@ -7,5 +7,5 @@ data class Context(
         val userId: Long,
         val storeId: Long,
         val menuCategory: MenuCategory?,
-        val handlers: List<RecommendationHandler>?,
+        val handlers: List<RecommendationHandler>,
 )
