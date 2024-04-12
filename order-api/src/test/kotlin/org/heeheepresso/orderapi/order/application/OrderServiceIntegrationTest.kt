@@ -5,10 +5,10 @@ import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.heeheepresso.orderapi.order.domain.model.OrderStatus
+import org.heeheepresso.orderapi.order.dto.request.OptionCreateRequest
 import org.heeheepresso.orderapi.order.dto.request.OrderCreateRequest
 import org.heeheepresso.orderapi.order.dto.request.OrderMenuCreateRequest
 import org.springframework.boot.test.context.SpringBootTest
-import java.math.BigDecimal
 
 @SpringBootTest
 class OrderServiceIntegrationTest(
@@ -23,7 +23,9 @@ class OrderServiceIntegrationTest(
                 result.id shouldNotBe null
                 result.buyer.userId shouldBe request.userId
                 result.store.storeId shouldBe request.storedId
+                result.store.storeName shouldBe request.storeName
                 result.paymentInfo.paymentId shouldBe request.paymentId
+                result.paymentInfo.amount.getIntValue() shouldBe request.amount
                 result.orderMenuList shouldHaveSize request.orderMenuList.size
                 result.packagedYn shouldBe request.packagedYn
             }
@@ -33,6 +35,47 @@ class OrderServiceIntegrationTest(
             }
         }
 
+        val order = orderService.createOrder(request)
+        val orderId = order.id ?: 1L
+        context("getOrder 메소드를 실행했을 때 반환값 OrderResponse의") {
+            val result = orderService.getOrder(orderId)
+            it("orderId 값은 요청 orderId 값과 동일하다") {
+                result.orderId shouldBe orderId
+            }
+            it("store 값은 요청 storeName 값과 동일하다") {
+                result.store shouldBe request.storeName
+            }
+            it("totalAmount 값은 요청 amount 값과 동일하다") {
+                result.store shouldBe request.storeName
+            }
+            it("menuList 개수는 요청 메뉴 개수와 동일하다") {
+                result.menuList shouldHaveSize request.orderMenuList.size
+            }
+            val resultMenuList = result.menuList
+            val requestMenuList = request.orderMenuList
+            //논의사항: 요청 때의 메뉴 순서를 지킬 필요는 없다.
+//            it("menuList의 각 요소의 값은 요청 메뉴 값과 동일하다") {
+//                for ((idx, resultMenu) in resultMenuList.withIndex()) {
+//                    val requestMenu = requestMenuList[idx]
+//                    resultMenu.name shouldBe requestMenu.menuName
+//                    resultMenu.price shouldBe requestMenu.price
+//                    resultMenu.totalAmount shouldBe requestMenu.totalAmount
+//                }
+//            }
+            val resultOptions = resultMenuList[0].options
+            val requestOptions = requestMenuList[0].options
+            it("응답 메뉴의 options 개수는 요청 메뉴의 옵션 개수와 동일하다") {
+                resultOptions shouldHaveSize requestOptions.size
+            }
+            it("응답 메뉴의 options 값은 요청 메뉴의 옵션 값과 동일하다") {
+                for ((idx, resultOption) in resultOptions.withIndex()) {
+                    val requestOption = requestOptions[idx]
+                    resultOption.price shouldBe requestOption.price
+                    resultOption.name shouldBe requestOption.name
+                    resultOption.quantity shouldBe requestOption.quantity
+                }
+            }
+        }
     }
 
 })
@@ -40,13 +83,26 @@ class OrderServiceIntegrationTest(
 fun request(): OrderCreateRequest {
     return OrderCreateRequest(
         1,
-        BigDecimal("2000"),
+        2000,
         true,
         1,
+        "가게1",
         1,
         listOf(
-            OrderMenuCreateRequest(1, BigDecimal("1000"), 1),
-            OrderMenuCreateRequest(2, BigDecimal("1000"), 1),
+            OrderMenuCreateRequest(1, "메뉴1", 1000, 1,
+                totalAmount = 1500,
+                options = listOf(
+                    OptionCreateRequest("HOT", 0, 1),
+                    OptionCreateRequest("시럽", 500, 1)
+                )
+            ),
+            OrderMenuCreateRequest(2, "메뉴2", 1000, 1,
+                totalAmount = 1500,
+                options = listOf(
+                    OptionCreateRequest("HOT", 0, 1),
+                    OptionCreateRequest("시럽", 500, 1),
+                )
+            ),
         )
     )
 }
