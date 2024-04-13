@@ -219,17 +219,25 @@ class OrderHistoryServiceTest @Autowired constructor(
                     orderHistory.paymentId shouldBe requestWithMenu.paymentId
                     validateBaseEntity(result, now)
 
+                    var menuIdx = 0L
                     orderHistory.orderMenuHistoryList?.size shouldBe requestWithMenu.orderMenuHistoryList.size
                     orderHistory.orderMenuHistoryList?.forEach { orderMenuHistory ->
                         val menuReq = requestWithMenu.orderMenuHistoryList.find { it.menuId == orderMenuHistory.menuId }
                         validateMenu(orderMenuHistory, menuReq, now)
 
+                        // id 기준으로 잘 정렬되었는지 검증
+                        (orderMenuHistory.id ?: 0L).shouldBeGreaterThan(menuIdx)
+                        menuIdx = orderMenuHistory.id ?: 0L
+
+                        var optionIdx = 0L
                         orderMenuHistory.orderMenuOptionHistoryList?.size shouldBe menuReq?.orderMenuOptionHistoryCreateRequest?.size
                         orderMenuHistory.orderMenuOptionHistoryList?.forEach { option ->
                             val optionReq =
                                 menuReq?.orderMenuOptionHistoryCreateRequest?.find { it.optionId == option.optionId }
-
                             validateOption(option, optionReq, now)
+
+                            (option.id ?: 0L).shouldBeGreaterThan(optionIdx)
+                            optionIdx = option.id ?: 0L
                         }
                     }
                 }
