@@ -16,9 +16,8 @@ class MenuCategoryServiceTest @Autowired constructor(
         When("특정 카테고리로 메뉴 목록을 조회하면") {
             val result = menuCategoryService.getPageByCategory(userId, testCategory)
             Then("카테고리 별 추천 메뉴 목록을 반환한다.") {
-                result.menus.size shouldBe 1
-                result.handler shouldBe testCategory
-                result.menus.stream().map { it.title }.toList() shouldContainAll listOf("신승건")
+                result.menus!!.size shouldBe 2
+                result.menus!!.stream().map { it.name }.toList() shouldContainAll listOf("신승건", "테스트")
             }
         }
     }
