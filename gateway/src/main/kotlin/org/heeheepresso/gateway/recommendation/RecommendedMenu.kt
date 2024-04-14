@@ -8,11 +8,11 @@ data class RecommendedMenu(
     fun toMenuInfoFromMap(menuInfoMap: Map<Long, MenuInfo>): MenuInfo {
         val menuInfo = menuInfoMap[this.menuId]
         return MenuInfo(
-                menuId = this.menuId,
+                id = this.menuId,
                 price = menuInfo!!.price,
                 name = menuInfo.name,
                 category = menuInfo.category,
-                imagePath = menuInfo.imagePath,
+                thumbnailImageUrl = menuInfo.thumbnailImageUrl,
                 subTitle = menuInfo.subTitle
         )
     }

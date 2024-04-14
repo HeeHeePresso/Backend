@@ -1,41 +1,32 @@
 package org.heeheepresso.gateway.menu.detail
 
 import com.google.common.collect.ImmutableList
+import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
+import org.heeheepresso.gateway.common.response.MenuApiStatus
+import org.heeheepresso.gateway.common.response.MenuApiStatus.*
 import org.heeheepresso.gateway.menu.category.MenuCategory
+import org.heeheepresso.gateway.menu.detail.client.MenuDetailController
+import org.heeheepresso.gateway.menu.domain.MenuBase
 import org.heeheepresso.gateway.menu.domain.MenuInfo
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
 @Service
-class MenuDetailService {
+class MenuDetailService(
+        private val menuDetailController: MenuDetailController
+) {
 
     @Cacheable("menuDetail")
     suspend fun getMenuDetails(menuIds: List<Long>?): List<MenuInfo> {
-        return ImmutableList.of(
-                MenuInfo(
-                        menuId = 1L,
-                        name = "신승건",
-                        price = 1000,
-                        category = MenuCategory.TEA_AND_ADE,
-                        imagePath = "/sample.png",
-                        subTitle = "ssg",
-                ),
-                MenuInfo(
-                        menuId = 2L,
-                        name = "김희재",
-                        price = 2000,
-                        category = MenuCategory.COFFEE,
-                        imagePath = "/sample2.png",
-                        subTitle = "khj",
-                ),
-                MenuInfo(
-                        menuId = 3L,
-                        name = "테스트",
-                        price = 4500,
-                        category = MenuCategory.TEA_AND_ADE,
-                        imagePath = "/sample3.png",
-                        subTitle = "test",
-                ),
-        )
+        if (menuIds != null) {
+            val callMenuInfo = menuDetailController.callMenuInfo(menuIds)
+            val response = callMenuInfo.awaitSingle()
+
+            if (response.resultCode == SUCCESS.resultCode) {
+                return response.data
+            }
+        }
+        return listOf()
     }
 }
