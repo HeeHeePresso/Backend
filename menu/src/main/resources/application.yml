@@ -33,12 +33,19 @@ spring:
   # JPA 설정
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
         show_sql: true
         format_sql: true
+  sql:
+    init:
+      mode: always
+      data-locations:
+        - classpath:sql/data.sql
+      schema-locations:
+        - classpath:sql/schema.sql
 
 # Springdoc 설정
 springdoc:
