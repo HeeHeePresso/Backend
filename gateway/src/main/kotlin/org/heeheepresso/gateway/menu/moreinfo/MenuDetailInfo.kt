@@ -15,7 +15,7 @@ class MenuDetailInfo(
         coroutineScope {
             val menuDetailMap = async {
                 menuDetailService
-                        .getMenuDetails(getTotalMenuIds(resultSet)).associateBy { it.menuId }
+                        .getMenuDetails(getTotalMenuIds(resultSet)).associateBy { it.id }
             }.await()
 
             resultSet.mapTo(resultMenus) { item ->

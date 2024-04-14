@@ -1,8 +1,8 @@
 package org.heeheepresso.gateway.menu.domain
 
 data class MenuBase(
-        val menuId: Long,
+        val id: Long,
         val name: String,
-        val price: Long,
+        val price: String,
         val thumbnailImageUrl: String
 )

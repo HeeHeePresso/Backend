@@ -13,21 +13,22 @@ eureka:
 
 spring:
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/gateway?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
-    username: root
-    password: 1234
-    driver-class-name: com.mysql.cj.jdbc.Driver
+      driver-class-name: org.h2.Driver
+      url: jdbc:h2:mem:testdb
+      username: sa
+      password:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
         show_sql: true
-  data:
-    redis:
-      host: localhost
-      port: 6379
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
   application:
     name: gateway
   cloud:
@@ -42,3 +43,16 @@ spring:
             allowed-headers: "*"
             exposed-headers: "*"
             allow-credentials: true
+      routes:
+        - id: menu-service
+          uri: lb://MENU-SERVICE
+          predicates:
+            - Path=/menus/**
+        - id: recommend-service
+          uri: lb://RECOMMEND-SERVICE
+          predicates:
+            - Path=/recommends/**
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/orders/**
