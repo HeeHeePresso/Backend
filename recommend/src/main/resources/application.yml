@@ -1,14 +1,9 @@
 spring:
   data:
     elasticsearch:
-        client:
-            reactive:
-            endpoints:
-                localhost:
-                host: localhost
-                port: 9200
-                username: elastic
-                password: roffjrtl8!
+      repositories:
+        enabled: true
+      url: localhost:9200
 #  elasticsearch:
 #    username: elastic
 #    password: roffjrtl8!

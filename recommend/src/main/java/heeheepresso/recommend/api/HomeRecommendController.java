@@ -1,7 +1,7 @@
 package heeheepresso.recommend.api;
 
 //import heeheepresso.recommend.domain.home.service.SeasonSpecialItemsService;
-import heeheepresso.recommend.domain.home.model.SeasonSpecialItem;
+import heeheepresso.recommend.domain.home.service.SeasonSpecialItemService;
 import heeheepresso.recommend.global.common.CommonApiResponse;
 import heeheepresso.recommend.global.dto.request.RecommendRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("")
 public class HomeRecommendController {
-//    private final SeasonSpecialItemService seasonSpecialItemService;
+    private final SeasonSpecialItemService seasonSpecialItemService;
 
     @PostMapping
     public ResponseEntity<?> getSeasonSpecialItemList(@RequestBody RecommendRequestDto recommendRequestDto) {
