@@ -3,14 +3,17 @@ package org.heeheepresso.gateway.recommendation
 import com.google.common.collect.ImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.reactor.awaitSingle
 import org.heeheepresso.gateway.common.Context
 import org.heeheepresso.gateway.menu.category.RecommendationFilterUtils.Companion.addCategoryFilter
 import org.heeheepresso.gateway.menu.moreinfo.MoreInfo
+import org.heeheepresso.gateway.recommendation.client.RecommendController
 import org.springframework.stereotype.Service
 
 @Service
 class RecommendationService(
-        private val moreInfos: List<MoreInfo>
+        private val moreInfos: List<MoreInfo>,
+        private val recommendController: RecommendController
 ) {
 
     companion object {
@@ -44,9 +47,12 @@ class RecommendationService(
     }
 
     private suspend fun getRecommendedMenu(request: RecommendedRequest): RecommendationResult {
-        return RecommendationResult(
-                recommendedMenus = ImmutableList.of(RecommendedMenu(1), RecommendedMenu(3)),
-                handler = if (request.handler == "HOME") "SEASON_RECOMMENDED" else request.handler
-        )
+        val recommendMenus = recommendController.callHomeRecommendMenus(request)
+        val response = recommendMenus.awaitSingle()
+
+        if (response.success) {
+            return response.data
+        }
+        return RecommendationResult()
     }
 }
