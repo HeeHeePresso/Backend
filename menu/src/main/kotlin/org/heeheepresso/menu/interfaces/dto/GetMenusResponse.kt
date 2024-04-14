@@ -1,5 +1,6 @@
 package org.heeheepresso.menu.interfaces.dto
 
+import org.heeheepresso.menu.domain.menu.model.Category
 import org.heeheepresso.menu.domain.menu.model.Menu
 import java.math.RoundingMode
 
@@ -8,6 +9,8 @@ data class GetMenusResponse(
         var name: String,
         var price: String,
         var thumbnailImageUrl: String,
+        var category: Category,
+        var subTitle: String,
 ) {
     companion object {
         fun from(menu: Menu): GetMenusResponse {
@@ -15,7 +18,9 @@ data class GetMenusResponse(
                     menu.menuId!!,
                     menu.title,
                     menu.menuItemPrice.storePrice.setScale(0, RoundingMode.DOWN).toString() + "원",
-                    menu.menuItemDetail.thumbnailUrl
+                    menu.menuItemDetail.thumbnailUrl,
+                    menu.category,
+                    menu.subTitle
             )
         }
     }
