@@ -1,31 +1,20 @@
 package heeheepresso.recommend.global.error;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public enum ErrorCode {
-    INVALID_PARAMETER(400, null, "Invalid Request Data"),
-    RESULT_EXPIRATION(410, "R001", "Result Was Expired"),
-    RESULT_NOT_FOUND(404, "R002", "Result Not Found"),
-
-    // 유저 관련 오류
-    USER_NOT_FOUND(404, "U001", "User Not Found"),
-
-
-    // 로그인 관련 오류
-    INVALID_LOGIN(401, "A001", "Unauthorized"),
-    INVALID_ACCESS_TOKEN(401, "A002", "Unauthorized"),
-
-    EXPIRED_ACCESS_TOKEN(404, "A003", "Access Token Was Expired"),
-    REFRESH_TOKEN_NOT_FOUND(404, "A007", "Refresh Token Not Found"),
-    INVALID_REFRESH_TOKEN(401, "A005", "Unauthorized"),
-    ACCESS_TOKEN_NOT_FOUND(404, "A004", "Access Token Not Found"),
-    EXPIRED_REFRESH_TOKEN(404, "A006", "Refresh Token Was Expired");
+    INVALID_ARGUMENT_ERROR(HttpStatus.BAD_REQUEST, 400, "올바르지 않은 파라미터입니다."),
+    INVALID_FORMAT_ERROR(HttpStatus.BAD_REQUEST,400, "올바르지 않은 포맷입니다."),
+    INVALID_TYPE_ERROR(HttpStatus.BAD_REQUEST, 400, "올바르지 않은 타입입니다."),
+    ILLEGAL_ARGUMENT_ERROR(HttpStatus.BAD_REQUEST, 400, "필수 파라미터가 없습니다"),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
 
 
-    private final int status;
-    private final String code;
+    private final HttpStatus httpStatus;
+    private final int code;
     private final String message;
 }

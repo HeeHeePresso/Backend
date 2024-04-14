@@ -1,8 +1,10 @@
 package heeheepresso.recommend.domain.home.repository;
 
-import heeheepresso.recommend.domain.home.model.SeasonSpecialItems;
+import heeheepresso.recommend.domain.home.model.SeasonSpecialItem;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.stereotype.Repository;
 
-public interface SeasonSpecialItemsRepository extends ElasticsearchRepository<SeasonSpecialItems, Long>{
+@Repository
+public interface SeasonSpecialItemsRepository extends ElasticsearchRepository<SeasonSpecialItem, Long>{
 
 }
