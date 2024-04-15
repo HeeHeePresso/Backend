@@ -1,10 +1,10 @@
 package org.heeheepresso.gateway.common
 
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 
-@Component
-class EurekaClient(
+@Service
+class EurekaClientService(
         private val webClientBuilder: WebClient.Builder
 ) {
     companion object {
