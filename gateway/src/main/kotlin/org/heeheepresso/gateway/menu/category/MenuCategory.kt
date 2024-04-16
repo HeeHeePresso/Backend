@@ -1,10 +1,12 @@
 package org.heeheepresso.gateway.menu.category
 
 enum class MenuCategory {
-    SET_MENU,
     COFFEE,
-    DECAFFINE_COFFEE,
-    BANACCINO_AND_SMOOTHIE,
-    TEA_AND_ADE,
-    BREAD_AND_DESSERT
+    DECAFFEINE_COFFEE,
+    MILK_TEA_AND_LATTE,
+    JUICE_AND_DRINK,
+    TEA_AMD_ADE,
+    BREAD,
+    DESSERT,
+    MD,
 }

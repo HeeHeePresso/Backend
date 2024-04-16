@@ -4,13 +4,13 @@ import org.heeheepresso.gateway.menu.category.MenuCategory
 
 data class MenuInfo(
         val id: Long,
-        var price: String,
         var name: String,
-        var category: MenuCategory,
+        var price: String,
         var thumbnailImageUrl: String,
+        var category: MenuCategory,
         var subTitle: String,
 ) {
-    constructor(menuId: Long) : this(menuId, "0원", "", MenuCategory.SET_MENU, "", "")
+    constructor(menuId: Long) : this(menuId, "", "0원", "", MenuCategory.COFFEE, "")
 
     fun getBaseInfo(): MenuBase {
         return MenuBase(

@@ -47,12 +47,16 @@ class RecommendationService(
     }
 
     private suspend fun getRecommendedMenu(request: RecommendedRequest): RecommendationResult {
-        val recommendMenus = recommendController.callHomeRecommendMenus(request)
-        val response = recommendMenus.awaitSingle()
-
-        if (response.success) {
-            return response.data
-        }
-        return RecommendationResult()
+//        val recommendMenus = recommendController.callHomeRecommendMenus(request)
+//        val response = recommendMenus.awaitSingle()
+//
+//        if (response.success) {
+//            return response.data
+//        }
+//        return RecommendationResult()
+        return RecommendationResult(
+                recommendedMenus = ImmutableList.of(RecommendedMenu(1L), RecommendedMenu(3L)),
+                handler = if (request.handler == "HOME") "SEASON_RECOMMENDED" else request.handler
+        )
     }
 }
