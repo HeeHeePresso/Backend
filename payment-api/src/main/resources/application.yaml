@@ -20,3 +20,14 @@ logging.level:
 
 grpc:
   port: 9090
+
+api:
+  kakao:
+    pay:
+      url:
+        base: https://open-api.kakaopay.com/online/v1/payment
+        approve: http://localhost:8080/payment/approve/
+        cancel: http://localhost:8080/payment/cancle/
+        fail: http://localhost:8080/payment/fail/
+      cid: TC0ONETIME
+      authorization: SECRET_KEY DEVBE5F0ADB1A582CA73C30ED360E7E6055CCCC8

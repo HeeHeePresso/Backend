@@ -8,5 +8,6 @@ enum class ApiStatus(
 ) : ApiStatusResponsible {
     SUCCESS(0, "성공", false, false),
     FAIL(1, "실패", false, false),
-    NOT_EXISTS_ORDER_HISTORY(1001, "존재하지 않는 주문 내역입니다.", false, false),
+    KAKAO_PAY_CLIENT_ERROR(-1001, "카카오 페이 API 요청 실패", false, false),
+    KAKAO_PAY_SERVER_ERROR(-1002, "카카오 페이 API 서버 에러", false, false),
 }

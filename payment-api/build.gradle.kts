@@ -63,6 +63,11 @@ dependencies {
 
     // jasypt (설정파일 암호화)
     implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5")
+
+    // webClient
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 tasks.withType<KotlinCompile> {
