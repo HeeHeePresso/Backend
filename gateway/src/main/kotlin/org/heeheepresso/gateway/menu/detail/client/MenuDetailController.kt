@@ -1,6 +1,5 @@
 package org.heeheepresso.gateway.menu.detail.client
 
-import org.heeheepresso.gateway.common.EurekaClientService
 import org.heeheepresso.gateway.common.response.MenuApiResponse
 import org.heeheepresso.gateway.menu.domain.MenuInfo
 import org.springframework.core.ParameterizedTypeReference
@@ -10,17 +9,11 @@ import reactor.core.publisher.Mono
 
 @RestController
 class MenuDetailController(
-        private val webClientBuilder: WebClient.Builder,
-        private val eurekaClientService: EurekaClientService
+        private val menuWebClient: WebClient,
 ) {
 
-    companion object {
-        private const val SERVICE_NAME = "menu-service"
-    }
-
     suspend fun callMenuInfo(menuIds: List<Long>): Mono<MenuApiResponse<List<MenuInfo>>> {
-        return client()
-                .get()
+        return menuWebClient.get()
                 .uri {
                     it.path("/menus")
                             .queryParam("id", menuIds)
@@ -28,11 +21,5 @@ class MenuDetailController(
                 }
                 .retrieve()
                 .bodyToMono(object : ParameterizedTypeReference<MenuApiResponse<List<MenuInfo>>>() {})
-    }
-
-    private suspend fun client(): WebClient {
-        return this.webClientBuilder
-                .baseUrl(eurekaClientService.discoverServiceByName(SERVICE_NAME))
-                .build()
     }
 }

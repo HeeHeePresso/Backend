@@ -1,6 +1,6 @@
 # Eureka 사용을 위한 포트 설정
 server:
-  port: 0
+  port: 8081
 
 # Eureka Client 설정
 eureka:
