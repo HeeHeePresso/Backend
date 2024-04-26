@@ -48,20 +48,21 @@ class SwaggerConfig {
         val exception = when (code) {
             "400" -> """
                 {
-                    "code" : "400",
-                    "message" : "잘못된 요청입니다.",
-                    "timestamp" : "2024-04-22T11:02Z"
+                    "resultCode" : 400,
+                    "resultMessage" : "잘못된 요청입니다.",
+                    "data" : null
                 }
             """.trimIndent()
 
             "500" -> """
                 {
-                    "code" : "500",
-                    "message" : "서버에서 오류가 발생했습니다.",
-                    "timestamp" : "2024-04-22T11:02Z"
+                    "resultCode" : 100,
+                    "resultMessage" : "서버에서 예상치 못한 오류가 발생했습니다.",
+                    "data" : null
                 }
             """.trimIndent()
 
+            // TODO: rate limit, circuit breaker, 인증에 대한 공통 응답 추가
             else -> ""
         }
         return createResponse(exception, desc)

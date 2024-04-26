@@ -18,9 +18,11 @@ class MenuDetailInfo(
                         .getMenuDetails(getTotalMenuIds(resultSet)).associateBy { it.id }
             }.await()
 
-            resultSet.mapTo(resultMenus) { item ->
-                RecommendedResultMenu(item.recommendedMenus
-                        .map { it.toMenuInfoFromMap(menuDetailMap) }, item.handler)
+            if (menuDetailMap.isNotEmpty()) {
+                resultSet.mapTo(resultMenus) { item ->
+                    RecommendedResultMenu(item.recommendedMenus
+                            .map { it.toMenuInfoFromMap(menuDetailMap) }, item.handler)
+                }
             }
         }
     }

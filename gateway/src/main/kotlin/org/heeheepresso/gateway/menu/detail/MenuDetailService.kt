@@ -1,6 +1,8 @@
 package org.heeheepresso.gateway.menu.detail
 
 import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
+import org.heeheepresso.gateway.common.response.MenuApiResponse
 import org.heeheepresso.gateway.common.response.MenuApiStatus.*
 import org.heeheepresso.gateway.menu.detail.client.MenuDetailController
 import org.heeheepresso.gateway.menu.domain.MenuInfo
@@ -12,14 +14,16 @@ class MenuDetailService(
         private val menuDetailController: MenuDetailController
 ) {
 
-    @Cacheable("menuDetail")
+    @Cacheable("menuDetail", unless = "#result == null || #result.size() == 0")
     suspend fun getMenuDetails(menuIds: List<Long>?): List<MenuInfo> {
         if (menuIds != null) {
             val callMenuInfo = menuDetailController.callMenuInfo(menuIds)
-            val response = callMenuInfo.awaitSingle()
+            val response = callMenuInfo.awaitSingleOrNull() ?: return listOf()
 
-            if (response.resultCode == SUCCESS.resultCode) {
-                return response.data
+            return if (response.resultCode == SUCCESS.resultCode) {
+                response.data
+            } else {
+                listOf()
             }
         }
         return listOf()
