@@ -1,9 +1,8 @@
 package org.heeheepresso.gateway.recommendation
 
-import com.google.common.collect.ImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.heeheepresso.gateway.common.Context
 import org.heeheepresso.gateway.menu.category.RecommendationFilterUtils.Companion.addCategoryFilter
 import org.heeheepresso.gateway.menu.moreinfo.MoreInfo
@@ -47,16 +46,11 @@ class RecommendationService(
     }
 
     private suspend fun getRecommendedMenu(request: RecommendedRequest): RecommendationResult {
-//        val recommendMenus = recommendController.callHomeRecommendMenus(request)
-//        val response = recommendMenus.awaitSingle()
-//
-//        if (response.success) {
-//            return response.data
-//        }
-//        return RecommendationResult()
-        return RecommendationResult(
-                recommendedMenus = ImmutableList.of(RecommendedMenu(1L), RecommendedMenu(3L)),
-                handler = if (request.handler == "HOME") "SEASON_RECOMMENDED" else request.handler
-        )
+        val recommendMenus = recommendController.callHomeRecommendMenus(request)
+        val response = recommendMenus.awaitSingleOrNull() ?: return RecommendationResult()
+        if (response.success) {
+            return response.data
+        }
+        return RecommendationResult()
     }
 }
