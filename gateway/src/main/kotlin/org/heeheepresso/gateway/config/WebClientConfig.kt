@@ -32,6 +32,15 @@ class WebClientConfig(
                 .build()
     }
 
+    @Bean
+    fun recommendWebClient(): WebClient {
+        return WebClient.builder()
+                .clientConnector(ReactorClientHttpConnector(this.httpClient()))
+                .baseUrl(RECOMMEND_SERVICE_URL)
+                .exchangeStrategies(this.exchangeStrategies())
+                .build()
+    }
+
     private fun httpClient() = HttpClient.create()
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, TIMEOUT_MILLIS.toInt())
             .responseTimeout(Duration.ofMillis(TIMEOUT_MILLIS))
