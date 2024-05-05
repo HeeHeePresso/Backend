@@ -8,13 +8,12 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class HomeController(
-        private val homeService: HomeService
+    private val homeService: HomeService
 ) {
 
     @Operation(summary = "Home Page API")
     @GetMapping("/home")
-    suspend fun getHome(
-            @RequestParam("userId") userId: Long
+    suspend fun getHome(@RequestParam("userId") userId: Long
     ): GatewayResponse<HomePageResponse> {
         return GatewayResponse(homeService.getHomeData(userId))
     }
