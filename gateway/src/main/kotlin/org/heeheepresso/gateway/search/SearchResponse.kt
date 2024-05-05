@@ -9,6 +9,6 @@ data class SearchResponse(
     }
 
     fun getTotalMenuIds(): List<Long> {
-        return results.mapNotNull { it.storeIds }.flatten()
+        return results.mapNotNull { it.menuIds }.flatten()
     }
 }

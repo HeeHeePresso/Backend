@@ -9,5 +9,5 @@ data class SearchResult(
     val searcherType: SearcherType,
     val searchRequestHandler: SearchRequestHandler,
     val imageUrls: List<String>? = null,
-    val storeIds: List<Long>? = null,
+    val menuIds: List<Long>? = null,
 )

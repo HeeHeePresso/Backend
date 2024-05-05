@@ -63,12 +63,12 @@ class HomeService(
         val results = response.results
             .filter { it.searcherType == RECOMMENDATION }
             .firstOrNull { it.searchRequestHandler == HOME }
-        if (results?.storeIds == null) {
+        if (results?.menuIds == null) {
             return emptyList()
         }
 
         val menuBaseList =
-            results.storeIds.map { menuDetailMap.getOrDefault(it, MenuInfo(it)) }
+            results.menuIds.map { menuDetailMap.getOrDefault(it, MenuInfo(it)) }
             .map {
                 MenuBase(
                     id = it.id,
