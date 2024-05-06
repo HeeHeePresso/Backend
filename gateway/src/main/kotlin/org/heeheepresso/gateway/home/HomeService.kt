@@ -1,41 +1,82 @@
 package org.heeheepresso.gateway.home
 
 import com.google.common.collect.ImmutableList
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import org.heeheepresso.gateway.event.EventService
-import org.heeheepresso.gateway.menu.category.MenuCategoryService
-import org.heeheepresso.gateway.recommendation.RecommendationHandler
-import org.heeheepresso.gateway.recommendation.RecommendationHandler.*
-import org.heeheepresso.gateway.recommendation.RecommendationService
+import org.heeheepresso.gateway.context.UserInfoContextElaborator
+import org.heeheepresso.gateway.menu.domain.MenuBase
+import org.heeheepresso.gateway.menu.domain.MenuInfo
+import org.heeheepresso.gateway.processor.post.MenuDetailSearchProcessor
+import org.heeheepresso.gateway.search.*
+import org.heeheepresso.gateway.search.SearchResponse.Companion.MENU_DETAIL_IDS
+import org.heeheepresso.gateway.search.query.EventSearchQuery
+import org.heeheepresso.gateway.search.query.HomeRecommendationSearchQuery
+import org.heeheepresso.gateway.search.request.SearchRequestHandler.HOME
+import org.heeheepresso.gateway.search.searcher.SearcherType.EVENT
+import org.heeheepresso.gateway.search.searcher.SearcherType.RECOMMENDATION
 import org.springframework.stereotype.Service
 
 @Service
 class HomeService(
-        private val recommendationService: RecommendationService,
-        private val menuCategoryService: MenuCategoryService,
-        private val eventService: EventService,
+    private val searcherService: SearcherService,
+    private val userInfoContextElaborator: UserInfoContextElaborator,
+    private val menuDetailSearchProcessor: MenuDetailSearchProcessor,
+    private val eventSearchQuery: EventSearchQuery,
+    private val homeRecommendationSearchQuery: HomeRecommendationSearchQuery,
 ) {
     suspend fun getHomeData(userId: Long): HomePageResponse {
-        return coroutineScope {
-            val recommendedMenus = async {
-                recommendationService.getRecommendedMenus(
-                        menuCategoryService.getContext(
-                                userId = userId,
-                                category = null,
-                                handlers = ImmutableList.of<RecommendationHandler>(HOME),
-                        )
-                )
-            }
-            val menuResults = recommendedMenus.await().mapHandlerWithMenus()
-            buildHomePageResponse(eventService.getEventFeatures(), menuResults)
-        }
+        val response = searcherService.search(buildSearchContext(userId))
+        return buildHomePageResponse(response)
     }
 
-    private fun buildHomePageResponse(events: List<String>, results: List<MenuResult>): HomePageResponse {
-        return HomePageResponse(
-                eventUrls = events,
-                menuInfos = results
+    private fun buildSearchContext(userId: Long): SearchContext {
+        return SearchContext(
+            UserInfo(userId = userId),
+            searchRequestType = SearchRequestType.HOME,
+            contextElaborators = ImmutableList.of(userInfoContextElaborator),
+            searchQueries = ImmutableList.of(eventSearchQuery, homeRecommendationSearchQuery),
+            postProcessors = ImmutableList.of(menuDetailSearchProcessor)
         )
+    }
+
+    private fun buildHomePageResponse(response: SearchResponse): HomePageResponse {
+        return HomePageResponse(getEventUrls(response), getMenuResult(response))
+    }
+
+    private fun getEventUrls(response: SearchResponse): List<String> {
+        val result = response.results
+            .filter { it.searcherType == EVENT }
+            .firstOrNull { it.searchRequestHandler == HOME }
+        if (result?.imageUrls == null) {
+            return emptyList()
+        }
+
+        return result.imageUrls
+    }
+
+    private fun getMenuResult(response: SearchResponse): List<MenuResult> {
+        val menuDetailMap = response.extra.getOrDefault(MENU_DETAIL_IDS, emptyList())
+            .filterIsInstance<MenuInfo>()
+            .associateBy { it.id }
+        if (menuDetailMap.isEmpty()) {
+            return emptyList()
+        }
+
+        val results = response.results
+            .filter { it.searcherType == RECOMMENDATION }
+            .firstOrNull { it.searchRequestHandler == HOME }
+        if (results?.menuIds == null) {
+            return emptyList()
+        }
+
+        val menuBaseList =
+            results.menuIds.map { menuDetailMap.getOrDefault(it, MenuInfo(it)) }
+            .map {
+                MenuBase(
+                    id = it.id,
+                    name = it.name,
+                    price = it.price,
+                    thumbnailImageUrl = it.thumbnailImageUrl
+                )
+            }
+        return ImmutableList.of(MenuResult(HOME.name, menuBaseList))
     }
 }
