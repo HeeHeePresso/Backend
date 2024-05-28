@@ -2,6 +2,7 @@ package org.heeheepresso.gateway.search
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.reactor.awaitSingle
 import org.heeheepresso.gateway.common.response.StatusCode
 import org.heeheepresso.gateway.search.searcher.SearcherGateway
 import org.springframework.stereotype.Service
@@ -20,10 +21,8 @@ class SearcherService(
 
     private suspend fun elaborateContext(searchContext: SearchContext) {
         return coroutineScope {
-            searchContext.contextElaborators.map {
-                async { it.elaborate(searchContext) }
-            }.forEach{
-                it.await()
+            searchContext.contextElaborators.forEach {
+                it.elaborate(searchContext)
             }
         }
     }
@@ -31,8 +30,9 @@ class SearcherService(
     private suspend fun query(searchContext: SearchContext): SearchResponse {
         return coroutineScope {
             val results = searchContext.searchQueries
-                .map { searcherGateway.search(it.getSearcher(), it.buildRequest(searchContext)) }
-                .mapNotNull { it.block() }
+                .map {
+                    async { searcherGateway.search(it.getSearcher(), it.buildRequest(searchContext)).awaitSingle() }
+                }.map{ it.await() }
                 .filter { it.statusCode == StatusCode.SUCCESS }
             SearchResponse(results)
         }
