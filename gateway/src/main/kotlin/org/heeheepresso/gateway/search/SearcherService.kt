@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class SearcherService(
-    private val searcherGateway: SearcherGateway,
+        private val searcherGateway: SearcherGateway,
 ) {
 
     suspend fun search(searchContext: SearchContext): SearchResponse {
@@ -30,20 +30,20 @@ class SearcherService(
     private suspend fun query(searchContext: SearchContext): SearchResponse {
         return coroutineScope {
             val results = searchContext.searchQueries
-                .map {
-                    async { searcherGateway.search(it.getSearcher(), it.buildRequest(searchContext)).awaitSingle() }
-                }.map{ it.await() }
-                .filter { it.statusCode == StatusCode.SUCCESS }
+                    .map {
+                        async { searcherGateway.search(it.getSearcher(), it.buildRequest(searchContext)).awaitSingle() }
+                    }.map { it.await() }
+                    .filter { it.statusCode == StatusCode.SUCCESS }
             SearchResponse(results)
         }
     }
 
     private suspend fun postProcessAfterSearch(
-        searchContext: SearchContext, response: SearchResponse) {
+            searchContext: SearchContext, response: SearchResponse) {
 
         return coroutineScope {
             searchContext.postProcessors.forEach {
-                it.process(response)
+                response.results.map { result -> result.searched = it.process(response) }
             }
         }
     }
