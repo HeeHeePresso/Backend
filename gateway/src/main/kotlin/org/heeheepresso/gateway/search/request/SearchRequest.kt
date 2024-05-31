@@ -12,4 +12,8 @@ data class SearchRequest(
 ) {
     constructor(userId: Long, handler: SearchRequestHandler, pageSize: Int):
         this(userId = userId, handler = handler, storeId = 0, pageSize = pageSize, offset = 0, category = null)
+
+    constructor(userId: Long, handler: SearchRequestHandler, pageSize: Int, category: MenuCategory?):
+            this(userId = userId, handler = handler, storeId = 0, pageSize = pageSize, offset = 0, category = category)
+
 }
