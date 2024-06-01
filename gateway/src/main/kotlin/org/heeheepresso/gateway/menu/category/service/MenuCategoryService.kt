@@ -9,8 +9,8 @@ import org.heeheepresso.gateway.menu.domain.MenuBase
 import org.heeheepresso.gateway.processor.post.MenuDetailSearchProcessor
 import org.heeheepresso.gateway.search.*
 import org.heeheepresso.gateway.search.query.MenuCategoryRecommendationSearchQuery
-import org.heeheepresso.gateway.search.request.SearchRequestHandler
-import org.heeheepresso.gateway.search.searcher.SearcherType
+import org.heeheepresso.gateway.search.request.SearchRequestHandler.*
+import org.heeheepresso.gateway.search.searcher.SearcherType.*
 import org.springframework.stereotype.Service
 
 @Service
@@ -30,7 +30,7 @@ class MenuCategoryService(
     private fun buildSearchContext(userId: Long, category: MenuCategory): SearchContext {
         return SearchContext(
                 UserInfo(userId = userId),
-                searchRequestType = SearchRequestType.HOME,
+                searchRequestType = SearchRequestType.MENU_CATEGORY,
                 contextElaborators = ImmutableList.of(userInfoContextElaborator),
                 searchQueries = ImmutableList.of(menuCategoryRecommendationSearchQuery),
                 postProcessors = ImmutableList.of(menuDetailSearchProcessor),
@@ -43,7 +43,7 @@ class MenuCategoryService(
     }
 
     private fun getMenuResult(response: SearchResponse): List<MenuResult> {
-        val menuBases = response.getResultBy<MenuBase>(searcherType = SearcherType.RECOMMENDATION, searchRequestHandler = SearchRequestHandler.MENU_CATEGORY)
-        return ImmutableList.of(MenuResult(SearchRequestHandler.HOME.name, menuBases))
+        val menuBases = response.getResultBy<MenuBase>(searcherType = RECOMMENDATION, searchRequestHandler = MENU_CATEGORY)
+        return ImmutableList.of(MenuResult(MENU_CATEGORY.name, menuBases))
     }
 }
