@@ -1,6 +1,7 @@
 package org.heeheepresso.gateway.menu.category
 
 enum class MenuCategory {
+    RECOMMENDATION,
     COFFEE,
     DECAFFEINE_COFFEE,
     MILK_TEA_AND_LATTE,
