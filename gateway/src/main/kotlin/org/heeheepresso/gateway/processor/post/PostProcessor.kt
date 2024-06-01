@@ -4,5 +4,5 @@ import org.heeheepresso.gateway.search.SearchResponse
 
 interface PostProcessor {
 
-    suspend fun process(response: SearchResponse): List<Any>
+    suspend fun process(response: SearchResponse)
 }
