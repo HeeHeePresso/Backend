@@ -17,7 +17,7 @@ class EventSearcher: Searcher {
                 statusCode = StatusCode.SUCCESS,
                 searcherType = SearcherType.EVENT,
                 searchRequestHandler = SearchRequestHandler.HOME,
-                imageUrls = ImmutableList.of(
+                searched = ImmutableList.of(
                     "https://github.com/HeeHeePresso/Backend/assets/49651099/7febfe0c-4aa9-47c1-8e74-cac555327349",
                     "https://github.com/HeeHeePresso/Backend/assets/49651099/7febfe0c-4aa9-47c1-8e74-cac555327349",
                     "https://github.com/HeeHeePresso/Backend/assets/49651099/7febfe0c-4aa9-47c1-8e74-cac555327349")

@@ -23,7 +23,7 @@ class RecommendationSearcher(
                     statusCode = if(it.success) SUCCESS else SERVER_ERROR,
                     searcherType = SearcherType.RECOMMENDATION,
                     searchRequestHandler = request.handler,
-                    menuIds = it.data.recommendedMenus.map{ menu -> menu.menuId}
+                    searched = it.data.recommendedMenus.map{ menu -> menu.menuId}
             ) }
     }
 
