@@ -8,6 +8,5 @@ data class SearchResult(
     val statusCode: StatusCode,
     val searcherType: SearcherType,
     val searchRequestHandler: SearchRequestHandler,
-    val imageUrls: List<String>? = null,
-    val menuIds: List<Long>? = null,
+    var searched: List<Any>? = null
 )
