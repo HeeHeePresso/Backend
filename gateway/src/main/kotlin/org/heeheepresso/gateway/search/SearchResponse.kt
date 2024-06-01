@@ -12,7 +12,8 @@ data class SearchResponse(
     }
 
     fun getTotalMenuIds(): List<Long> {
-        return results.mapNotNull { it.searched }.filterIsInstance<List<Long>>().flatten()
+        return results.first { it.searcherType == SearcherType.RECOMMENDATION }.searched?.filterIsInstance<Long>()
+                ?: emptyList()
     }
 
     inline fun <reified T> getResultBy(searcherType: SearcherType, searchRequestHandler: SearchRequestHandler): List<T> {
