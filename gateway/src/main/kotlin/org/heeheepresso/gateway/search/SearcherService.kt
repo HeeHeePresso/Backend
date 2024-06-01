@@ -43,7 +43,7 @@ class SearcherService(
 
         return coroutineScope {
             searchContext.postProcessors.forEach {
-                response.results.map { result -> result.searched = it.process(response) }
+                it.process(response)
             }
         }
     }
